@@ -9,7 +9,7 @@ tab1, tab2, tab3 = st.tabs(["Introdução", "Calculadora", "Em construção"])
 
 
 with tab1:
-    st.title("Boas Vindas")
+    st.title("Boas Vindas!")
     st.write("""Disponibilizamos ferramentas úteis ao trabalho do Ministério Público na esfera criminal!""")
     st.write("""O objetivo deste espaço é tornar mais eficiente a persecução penal, por meio de 
                 tecnologias que auxliem o trabalho dos membros do Parquet.""")
