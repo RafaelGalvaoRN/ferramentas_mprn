@@ -1,9 +1,11 @@
 import streamlit as st
 import dicionario_prescricao
 import utilidades
+from datetime import datetime, timedelta
 
 
-tab1, tab2, tab3 = st.tabs(["Intro", "Calculadora", "Em construção"])
+
+tab1, tab2, tab3 = st.tabs(["Introdução", "Calculadora", "Em construção"])
 
 
 with tab1:
@@ -21,7 +23,9 @@ with tab2:
 
     processo = st.text_input(label='Processo', max_chars=30)
     reu = st.text_input(label='Réu', max_chars=30)
-    data_fato = st.date_input(label='Data do Fato', value=None, format="DD/MM/YYYY")
+
+    data_minima = datetime.today() - timedelta(days=60 * 365)
+    data_fato = st.date_input(label='Data do Fato', value=None, format="DD/MM/YYYY", min_value=data_minima)
     dicionario_final['data_fato'] = data_fato
 
     legislacao = st.radio('Legislação', ['Código Penal', 'Lei Maria da Penha', 'Lei 11.343/06 - Lei de Drogas'])
@@ -29,7 +33,8 @@ with tab2:
     if legislacao == 'Código Penal':
 
         crimes = [crime for crime in dicionario_prescricao.dic_prescricao.keys() ]
-        tipo_penal = st.selectbox('Código ', crimes)
+        crimes_ordenados = sorted(crimes)
+        tipo_penal = st.selectbox('Código ', crimes_ordenados)
         dicionario_final['crime'] = tipo_penal
 
     elif legislacao == 'Lei Maria da Penha':
@@ -47,16 +52,19 @@ with tab2:
 
 
     if recebimento_denuncia:
-        dt_denuncia = st.date_input('Data do recebimento da Denúncia', format="DD/MM/YYYY")
+        data_minima = datetime.today() - timedelta(days=30 * 365)
+
+        dt_denuncia = st.date_input('Data do recebimento da Denúncia', format="DD/MM/YYYY", min_value=data_minima)
         dicionario_final['Dt_Denuncia'] = dt_denuncia
 
     suspensao_prescricao = st.checkbox('Suspensão da Prescrição')
     dicionario_final['suspensao_prescricao_bool'] = suspensao_prescricao
 
     if suspensao_prescricao:
+        data_minima = datetime.today() - timedelta(days=30 * 365)
 
-        dt_inicio_suspensao = st.date_input('Data do Início da Suspensão', value=None, format="DD/MM/YYYY")
-        dt_fim_suspensao = st.date_input('Data do Fim da Suspensão', value=None, format="DD/MM/YYYY")
+        dt_inicio_suspensao = st.date_input('Data do Início da Suspensão', value=None, format="DD/MM/YYYY", min_value=data_minima)
+        dt_fim_suspensao = st.date_input('Data do Fim da Suspensão', value=None, format="DD/MM/YYYY", min_value=data_minima)
 
         dicionario_final['Dt_inicio_suspensao'] = dt_inicio_suspensao
         dicionario_final['Dt_fim_suspensao'] = dt_fim_suspensao
@@ -67,7 +75,13 @@ with tab2:
     dicionario_final['verificacao_idade'] = verificacao_idade
 
     if verificacao_idade:
-        idade_autor = st.date_input('Data de nascimento do Autor', value=None,  format="DD/MM/YYYY")
+        # Calcule a data de 90 anos atrás
+        data_minima = datetime.today() - timedelta(days=100 * 365)
+
+        # Agora você pode usar 'data_minima' como o valor de 'min_value'
+        idade_autor = st.date_input('Data de nascimento do Autor', value=None, format="DD/MM/YYYY",
+                                    min_value=data_minima)
+
         dicionario_final['idade_autor'] = idade_autor
         dicionario_final['verificacao_idade']: True
 
@@ -118,7 +132,6 @@ with tab2:
 
             if dicionario_final['data_fato'] > dicionario_final['Dt_Denuncia']:
                 st.error('Data do Fato não pode ser posterior à Data do recebimento da Denúncia', icon="🚫")
-
 
 
         st.header('Dados informados')
