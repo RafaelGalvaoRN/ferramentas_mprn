@@ -367,8 +367,15 @@ def analisa_prescricao(dicionario: dict):
 
 
             else:
-                parecer = 'Não prescreveu entre a data do fato e a data de recebimento da denuncia. ' \
-                          'Não prescreveu entre a data de recebimento da denúncia e a data atual.'
+                parecer = f'''
+                MM. Juíza,\n\n            
+                In casu, verifica-se que o(s) delito(s) investigado(s) possui(em) prazo prescricional máximo de {dic_prescricao[crime_analisado]} anos, uma vez a 
+                 conduta se subsumir ao tipo penal de {crime_analisado}.\n
+                Uma vez que os fatos datam de {corrige_ordem_da_data_str(dicionario['data_fato'])}, forçoso reconhecer que não se operou a prescrição.\n            
+                Insta pontuar que fora analisado o marco interruptivo atinente ao recebimento da denúncia quando da análise do procedimento (CP, Art. 117, Inc. I).\n            
+                Ante o exposto, o MP requer o prosseguimento do feito.\n            
+                Pede deferimento.\n     
+                   '''
                 resultado['tempo_decorrido_para_prescricao'] = tempo_decorrido_para_prescricao
                 resultado['prazo_prescricao'] = dic_prescricao[crime_analisado]
                 resultado['resultado'] = False
