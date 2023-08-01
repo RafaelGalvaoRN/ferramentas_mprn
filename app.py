@@ -2,6 +2,7 @@ import streamlit as st
 import dicionario_prescricao
 import utilidades
 from datetime import datetime, timedelta
+import copy
 
 
 
@@ -136,12 +137,19 @@ with tab2:
 
         st.header('Dados informados')
 
-        st.table(utilidades.converte_dic_dataframe_vertical(dicionario_final))
+        dic_dados_informados = copy.deepcopy(dicionario_final)
 
+        dic_dados_informados = utilidades.normaliza_key_dic_dados_informados(dic_dados_informados)
+
+        dic_dados_informados = utilidades.normaliza_value_dic_dados_informados(dic_dados_informados)
+
+        st.table(utilidades.converte_dic_dataframe_vertical(dic_dados_informados))
+
+
+        st.header('Dados calculados')
 
         dic_resultado, parecer = utilidades.analisa_prescricao(dicionario_final)
 
-        st.header('Dados calculados')
 
         st.table(utilidades.converte_dic_dataframe_vertical(dic_resultado))
 

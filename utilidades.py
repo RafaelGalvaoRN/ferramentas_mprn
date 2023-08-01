@@ -247,12 +247,6 @@ def analisa_prescricao(dicionario: dict):
 
     if dicionario['verificacao_idade'] == True:
 
-        print(calcula_se_e_menor_21_tempo_crime(dicionario['idade_autor'],dicionario['data_fato']))
-
-        print(calcula_se_e_maior_de_setenta_anos(dicionario['idade_autor']))
-
-
-
         if calcula_se_e_menor_21_tempo_crime(dicionario['idade_autor'],
                                              dicionario['data_fato']) or calcula_se_e_maior_de_setenta_anos(
                 dicionario['idade_autor']):
@@ -526,3 +520,56 @@ def converte_dic_dataframe_vertical(dicionario_final: dict):
 
     return df
 
+
+def normaliza_key_dic_dados_informados(dicionario_corrigir: dict) -> dict:
+    dicionario_normalizado ={}
+
+
+    if 'data_fato' in dicionario_corrigir:
+        dicionario_normalizado['Data do Fato'] = dicionario_corrigir.pop('data_fato')
+
+    if 'crime' in dicionario_corrigir:
+        dicionario_normalizado['Crime'] = dicionario_corrigir.pop('crime')
+
+    if 'recebimento_denuncia_bool' in dicionario_corrigir:
+        dicionario_normalizado['Recebimento da Denúncia?'] = dicionario_corrigir.pop('recebimento_denuncia_bool')
+
+    if 'Dt_Denuncia' in dicionario_corrigir:
+        dicionario_normalizado['Data de recebimento da Denúncia'] = dicionario_corrigir.pop('Dt_Denuncia')
+
+    if 'suspensao_prescricao_bool' in dicionario_corrigir:
+        dicionario_normalizado['Prescrição foi suspensa?'] = dicionario_corrigir.pop('suspensao_prescricao_bool')
+
+    if 'Dt_inicio_suspensao' in dicionario_corrigir:
+        dicionario_normalizado['Data do início da suspensão'] = dicionario_corrigir.pop('Dt_inicio_suspensao')
+
+    if 'Dt_fim_suspensao' in dicionario_corrigir:
+        dicionario_normalizado['Data do fim da suspensão'] = dicionario_corrigir.pop('Dt_fim_suspensao')
+
+    if 'verificacao_idade' in dicionario_corrigir:
+        dicionario_normalizado['Houve verificação da idade do autor do fato?'] = dicionario_corrigir.pop('verificacao_idade')
+
+    if 'idade_autor' in dicionario_corrigir:
+        dicionario_normalizado['Data de nascimento do autor do fato'] = dicionario_corrigir.pop('idade_autor')
+
+    return dicionario_normalizado
+
+
+def normaliza_value_dic_dados_informados(dicionario_corrigir: dict) -> dict:
+
+    dicionario_normalizado = dict(dicionario_corrigir)
+
+
+    for key, valores in dicionario_corrigir.items():
+
+        if isinstance(valores, date):
+            dicionario_normalizado[key] = valores.strftime('%d/%m/%Y')
+
+        if valores == True:
+            dicionario_normalizado[key] = "Sim"
+
+        if valores == False:
+            dicionario_normalizado[key] = "Não"
+
+
+    return dicionario_normalizado
