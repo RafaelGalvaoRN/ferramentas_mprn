@@ -122,14 +122,16 @@ def calcula_diferenca_entre_data_ate_atual(data: date) -> int:
         return anos
 
 
-def calcula_diferenca_entre_data_ate_atual_em_dias(data: str) -> int:
+def calcula_diferenca_entre_data_ate_atual_em_dias(data: datetime) -> int:
     # convert data string in dic in datetime object
-    data_fato = datetime.strptime(data, "%Y-%m-%d").date()
+    data_fato = data
+
     # pega data atual
     data_atual = date.today()
 
     # calcula a diferenca entre a data do fato e a data atual
     diferenca_dt_fato_x_dt_atual_dias = (data_atual - data_fato).days
+
 
     return diferenca_dt_fato_x_dt_atual_dias
 
@@ -225,10 +227,23 @@ def corrige_ordem_da_data_str(data) -> str:
     return data_formatada
 
 
+def calcular_idade(data_de_nascimento):
+    hoje = datetime.now()
+    idade = hoje.year - data_de_nascimento.year
+
+    if (hoje.month, hoje.day) < (data_de_nascimento.month, data_de_nascimento.day):
+        idade -= 1
+
+    return idade
 
 
+def calcular_idade_na_data(data_de_nascimento, data_do_fato):
+    idade = data_do_fato.year - data_de_nascimento.year
 
+    if (data_do_fato.month, data_do_fato.day) < (data_de_nascimento.month, data_de_nascimento.day):
+        idade -= 1
 
+    return idade
 
 def analisa_prescricao(dicionario: dict):
     # verifica se o crime está cadastrado e, não estando - manda msg e encerra
@@ -330,14 +345,6 @@ def analisa_prescricao(dicionario: dict):
                 return resultado, parecer
 
 
-
-            else:
-                parecer = f'Não prescreveu entre a data do fato e a data do recebimento da denuncia'
-                resultado['tempo_decorrido_para_prescricao'] = tempo_decorrido_para_prescricao
-                resultado['prazo_prescricao'] = dic_prescricao[crime_analisado]
-                resultado['resultado'] = False
-                return resultado, parecer
-
             print('Analisando entre data do recebimento da denuncia e a data atual:')
             tempo_decorrido_para_prescricao = calcula_diferenca_entre_data_ate_atual(dicionario['Dt_Denuncia']) * reducao_da_prescricao_metade
 
@@ -360,7 +367,8 @@ def analisa_prescricao(dicionario: dict):
 
 
             else:
-                parecer = 'Não prescreveu entre a data do recebimento da denuncia e a data atual'
+                parecer = 'Não prescreveu entre a data do fato e a data de recebimento da denuncia. ' \
+                          'Não prescreveu entre a data de recebimento da denúncia e a data atual.'
                 resultado['tempo_decorrido_para_prescricao'] = tempo_decorrido_para_prescricao
                 resultado['prazo_prescricao'] = dic_prescricao[crime_analisado]
                 resultado['resultado'] = False
@@ -370,8 +378,6 @@ def analisa_prescricao(dicionario: dict):
     elif dicionario['suspensao_prescricao_bool'] == True:
         tempo_suspensao_dias = dicionario['Dt_inicio_suspensao'] - dicionario['Dt_fim_suspensao']
         tempo_suspensao_dias = tempo_suspensao_dias.days
-        print ('auoiusaioduaosi')
-        print(tempo_suspensao_dias)
 
         print(f'Tempo de suspensao calculado em dias: {tempo_suspensao_dias}')
 
@@ -459,14 +465,8 @@ def analisa_prescricao(dicionario: dict):
                 resultado['resultado'] = True
                 return resultado, parecer
 
-            else:
-                parecer = f'Não prescreveu entre a data do fato e a data do recebimento da denuncia'
 
-                resultado['tempo_decorrido_para_prescricao'] = tempo_decorrido_para_prescricao
-                resultado['prazo_prescricao'] = dic_prescricao[crime_analisado]
-                resultado['tempo_suspensao'] = tempo_suspensao_dias
-                resultado['resultado'] = False
-                return resultado, parecer
+            # analisa entre o recebimento da denúncia e a presente data
 
             print('Analisando entre data do recebimento da denuncia e a data atual:')
 
@@ -500,7 +500,8 @@ def analisa_prescricao(dicionario: dict):
                 return resultado, parecer
 
             else:
-                parecer = 'Não prescreveu entre a data do recebimento da denuncia e a data atual'
+                parecer = 'Não prescreveu entre a data do fato e a data do recebimento da denuncia. ' \
+                          'Não prescreveu entre a data do recebimento da denuncia e a data atual'
                 resultado['tempo_decorrido_para_prescricao'] = tempo_decorrido_para_prescricao
                 resultado['prazo_prescricao'] = dic_prescricao[crime_analisado]
                 resultado['tempo_suspensao'] = tempo_suspensao_dias
@@ -571,5 +572,50 @@ def normaliza_value_dic_dados_informados(dicionario_corrigir: dict) -> dict:
         if valores == False:
             dicionario_normalizado[key] = "Não"
 
+
+    return dicionario_normalizado
+
+
+def normaliza_key_dic_dados_calculados(dicionario_corrigir: dict) -> dict:
+
+    print('aqyu')
+    print(dicionario_corrigir)
+
+    dicionario_normalizado = {}
+
+    if 'prazo_prescricao' in dicionario_corrigir:
+        dicionario_normalizado['Prescrição do crime (anos):'] = dicionario_corrigir.pop('prazo_prescricao')
+
+    if 'tempo_suspensao' in dicionario_corrigir:
+        dicionario_normalizado['Tempo de suspensão (dias):'] = dicionario_corrigir.pop('tempo_suspensao')
+
+    if 'resultado' in dicionario_corrigir:
+        dicionario_normalizado['Crime prescreveu?'] = dicionario_corrigir.pop('resultado')
+
+    if 'Idade atual do autor (anos)' in dicionario_corrigir:
+        dicionario_normalizado['Idade atual do autor (anos)'] = dicionario_corrigir['Idade atual do autor (anos)']
+
+    if 'Idade do autor na data do fato (anos)' in dicionario_corrigir:
+        dicionario_normalizado['Idade do autor na data do fato (anos)'] = dicionario_corrigir[
+            'Idade do autor na data do fato (anos)']
+
+    return dicionario_normalizado
+
+
+def normaliza_value_dic_dados_calculados(dicionario_corrigir: dict) -> dict:
+
+    dicionario_normalizado = {}
+
+
+    for key, valores in dicionario_corrigir.items():
+
+        if isinstance(valores, int):
+            dicionario_normalizado[key] = abs(valores)
+
+        if valores == True:
+            dicionario_normalizado[key] = "Sim"
+
+        if valores == False:
+            dicionario_normalizado[key] = "Não"
 
     return dicionario_normalizado

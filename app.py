@@ -89,28 +89,30 @@ with tab2:
 
     if st.button('Calcular'):
 
+
+
         if  dicionario_final['suspensao_prescricao_bool']:
 
             if dicionario_final['Dt_inicio_suspensao'] > dicionario_final['Dt_fim_suspensao']:
                 st.error('Data do início da suspensão não pode ser posterior à Data do fim da suspensão', icon="🚫")
 
-            elif dicionario_final['Dt_inicio_suspensao'] > dicionario_final['Dt_fim_suspensao']:
-                st.error('Data do início da suspensão não pode ser posterior à Data do fim da suspensão', icon="🚫")
 
-            elif dicionario_final['Dt_inicio_suspensao'] < dicionario_final['Dt_Denuncia']:
-                st.error('Data do início da suspensão não pode ser anterior à Data do recebimento da Denúncia', icon="🚫")
 
-            elif dicionario_final['Dt_fim_suspensao'] < dicionario_final['Dt_Denuncia']:
-                st.error('Data do fim da suspensão não pode ser anterior à Data do recebimento da Denúncia', icon="🚫")
+            if dicionario_final.get('Dt_Denuncia', False):
+                if dicionario_final['Dt_inicio_suspensao'] < dicionario_final['Dt_Denuncia']:
+                    st.error('Data do início da suspensão não pode ser anterior à Data do recebimento da Denúncia', icon="🚫")
 
-            elif dicionario_final['Dt_inicio_suspensao'] < dicionario_final['data_fato']:
+                elif dicionario_final['Dt_fim_suspensao'] < dicionario_final['Dt_Denuncia']:
+                    st.error('Data do fim da suspensão não pode ser anterior à Data do recebimento da Denúncia', icon="🚫")
+
+            if dicionario_final['Dt_inicio_suspensao'] < dicionario_final['data_fato']:
                 st.error('Data do início da suspensão não pode ser anterior à Data do Fato', icon="🚫")
 
             elif dicionario_final['Dt_fim_suspensao'] < dicionario_final['data_fato']:
                 st.error('Data do fim da suspensão não pode ser anterior à Data do Fato', icon="🚫")
 
 
-        if  dicionario_final['verificacao_idade']:
+        if  dicionario_final.get('verificacao_idade', False):
             if dicionario_final['idade_autor'] > dicionario_final['data_fato']:
                 st.error('Data de nascimento do autor do fato não pode ser posterior à data do fato', icon="🚫")
 
@@ -126,7 +128,7 @@ with tab2:
                         'Data de nascimento do autor do fato não pode ser posterior à data do fim da suspensão do prazo prescricional',
                         icon="🚫")
 
-        if dicionario_final['recebimento_denuncia_bool']:
+        if dicionario_final.get('recebimento_denuncia_bool', False):
             if  dicionario_final['verificacao_idade']:
                 if dicionario_final['idade_autor'] > dicionario_final['Dt_Denuncia']:
                     st.error('Data de nascimento do autor do fato não pode ser posterior à data de recebimento da denúncia', icon="🚫")
@@ -135,26 +137,53 @@ with tab2:
                 st.error('Data do Fato não pode ser posterior à Data do recebimento da Denúncia', icon="🚫")
 
 
+        #inicia campo dados informados
         st.header('Dados informados')
-
+        #faz uma copia do dicionario para o novo dicionario
         dic_dados_informados = copy.deepcopy(dicionario_final)
-
+        #pega idade do autor informada, para calcular idade do autor em outro campo do streamlit
+        dt_nascimento_autor = dic_dados_informados.get('idade_autor', None)
+        dt_fato = dic_dados_informados.get('data_fato', None)
+        #corrige keys
         dic_dados_informados = utilidades.normaliza_key_dic_dados_informados(dic_dados_informados)
-
+        # corrige values
         dic_dados_informados = utilidades.normaliza_value_dic_dados_informados(dic_dados_informados)
+        #imprime tabela
+        st.table(utilidades.converte_dic_dataframe_vertical(dic_dados_informados))
+
+        #inicia campo dados calculados
+        st.header('Dados calculados')
+        #pega resultado e parecer gerado pela funcao analisa prescricao
+        dic_resultado, parecer = utilidades.analisa_prescricao(dicionario_final)
+
+
+        #adiciona data de nascimento e calculo da idade do autor no dic
+        if dt_nascimento_autor:
+
+
+            dic_resultado['Data de nascimento do autor'] = dt_nascimento_autor
+            dic_resultado['Idade atual do autor (anos)'] = utilidades.calcular_idade(dt_nascimento_autor)
+
+            dic_resultado['Idade do autor na data do fato (anos)'] = utilidades.calcular_idade_na_data(dt_nascimento_autor,
+                                                                                                       dt_fato)
+
+
+        dic_dados_informados = copy.deepcopy(dic_resultado)
+
+        print('jshdakjasdhkjsahdkjhsdakjdhkajs')
+        print(dic_dados_informados)
+
+        dic_dados_informados = utilidades.normaliza_key_dic_dados_calculados(dic_dados_informados)
+
+        dic_dados_informados = utilidades.normaliza_value_dic_dados_calculados(dic_dados_informados)
+
+
 
         st.table(utilidades.converte_dic_dataframe_vertical(dic_dados_informados))
 
 
-        st.header('Dados calculados')
-
-        dic_resultado, parecer = utilidades.analisa_prescricao(dicionario_final)
-
-
-        st.table(utilidades.converte_dic_dataframe_vertical(dic_resultado))
 
         st.header('Parecer')
-
         st.write(parecer)
 
 
