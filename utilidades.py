@@ -267,6 +267,8 @@ def analisa_prescricao(dicionario: dict):
                 dicionario['idade_autor']):
 
             reducao_da_prescricao_metade = 1/2
+            resultado['Redução da Prescrição pela metade?'] = True
+        resultado['Redução da Prescrição pela metade?'] = False
 
 
 
@@ -393,7 +395,7 @@ def analisa_prescricao(dicionario: dict):
             # seta tempo decorrido, considerando a data do fato
             tempo_decorrido_para_prescricao = calcula_diferenca_entre_data_ate_atual_em_dias(dicionario['data_fato']) * reducao_da_prescricao_metade
             # calcula tempo de suspensao em dias
-            print('')
+
             tempo_suspensao_dias = (dicionario['Dt_inicio_suspensao'] - dicionario['Dt_fim_suspensao']).days
 
             # desconta o tempo que o processo esteve suspenso
@@ -585,9 +587,6 @@ def normaliza_value_dic_dados_informados(dicionario_corrigir: dict) -> dict:
 
 def normaliza_key_dic_dados_calculados(dicionario_corrigir: dict) -> dict:
 
-    print('aqyu')
-    print(dicionario_corrigir)
-
     dicionario_normalizado = {}
 
     if 'prazo_prescricao' in dicionario_corrigir:
@@ -606,10 +605,16 @@ def normaliza_key_dic_dados_calculados(dicionario_corrigir: dict) -> dict:
         dicionario_normalizado['Idade do autor na data do fato (anos)'] = dicionario_corrigir[
             'Idade do autor na data do fato (anos)']
 
+    if 'Redução da Prescrição pela metade?' in dicionario_corrigir:
+        dicionario_normalizado['Redução da Prescrição pela metade?'] = dicionario_corrigir['Redução da Prescrição pela metade?']
+
+
     return dicionario_normalizado
 
 
 def normaliza_value_dic_dados_calculados(dicionario_corrigir: dict) -> dict:
+
+
 
     dicionario_normalizado = {}
 
@@ -624,5 +629,7 @@ def normaliza_value_dic_dados_calculados(dicionario_corrigir: dict) -> dict:
 
         if valores == False:
             dicionario_normalizado[key] = "Não"
+
+
 
     return dicionario_normalizado
