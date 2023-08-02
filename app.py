@@ -154,7 +154,7 @@ with tab2:
         #inicia campo dados calculados
         st.header('Dados calculados')
         #pega resultado e parecer gerado pela funcao analisa prescricao
-        dic_resultado, parecer = utilidades.analisa_prescricao(dicionario_final)
+        dic_resultado, parecer = utilidades.analisa_prescricao(dicionario_final, processo, reu)
 
 
 

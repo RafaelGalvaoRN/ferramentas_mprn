@@ -245,8 +245,11 @@ def calcular_idade_na_data(data_de_nascimento, data_do_fato):
 
     return idade
 
-def analisa_prescricao(dicionario: dict):
-    # verifica se o crime está cadastrado e, não estando - manda msg e encerra
+def analisa_prescricao(dicionario: dict, processo: str = None, reu: str = None):
+    if not processo:
+        processo = "Não informado"
+    if not reu:
+        reu = "Não informado"
 
 
     resultado = {}
@@ -285,6 +288,10 @@ def analisa_prescricao(dicionario: dict):
 
             if tempo_decorrido_para_prescricao > dic_prescricao[crime_analisado]:
                 parecer = f'''
+                Ref. ao processo: {processo}\n 
+                Investigado(a): {reu}        
+                \n\n          
+                
                 MM. Juíza,\n\n            
                 In casu, verifica-se que o(s) delito(s) investigado(s) possui(em) prazo prescricional máximo de {dic_prescricao[crime_analisado]} anos ({crime_analisado}).\n
                 Uma vez que os fatos datam de {corrige_ordem_da_data_str(dicionario['data_fato'])}, forçoso reconhecer a incidência da prescrição.\n            
@@ -301,6 +308,10 @@ def analisa_prescricao(dicionario: dict):
 
             else:
                 parecer = f'''
+                           Ref. ao processo: {processo}\n 
+                           Investigado(a): {reu}    
+                           \n\n         
+                                
                            MM. Juíza,\n\n            
                            In casu, verifica-se que o(s) delito(s) investigado(s) possui(em) prazo prescricional máximo de {dic_prescricao[crime_analisado]} anos ({crime_analisado}).\n
                            Uma vez que os fatos datam de {corrige_ordem_da_data_str(dicionario['data_fato'])}, forçoso reconhecer que não houve a incidência da prescrição.\n            
@@ -331,6 +342,9 @@ def analisa_prescricao(dicionario: dict):
             # analisa entre a data do fato e o recebimento da denúncia
             if tempo_decorrido_para_prescricao > dic_prescricao[crime_analisado]:
                 parecer = f'''
+                Ref. ao processo: {processo}\n 
+                Investigado(a): {reu}
+                \n\n  
 
                 MM. Juíza,\n\n            
                 In casu, verifica-se que o(s) delito(s) investigado(s) possui(em) prazo prescricional máximo de {dic_prescricao[crime_analisado]} anos ({crime_analisado}).\n
@@ -353,6 +367,9 @@ def analisa_prescricao(dicionario: dict):
             # analisa entre a data do recebimento da denúncia e a data atual
             if tempo_decorrido_para_prescricao > dic_prescricao[crime_analisado]:
                 parecer = f'''
+                           Ref. ao processo: {processo}\n 
+                           Investigado(a): {reu}
+                           \n\n  
 
                            MM. Juíza,\n\n            
                            In casu, verifica-se que o(s) delito(s) investigado(s) possui(em) prazo prescricional máximo de {dic_prescricao[crime_analisado]} anos ({crime_analisado}).\n
@@ -370,6 +387,10 @@ def analisa_prescricao(dicionario: dict):
 
             else:
                 parecer = f'''
+                Ref. ao processo: {processo}\n 
+                Investigado(a): {reu} 
+                \n\n  
+                
                 MM. Juíza,\n\n            
                 In casu, verifica-se que o(s) delito(s) investigado(s) possui(em) prazo prescricional máximo de {dic_prescricao[crime_analisado]} anos, uma vez a 
                  conduta se subsumir ao tipo penal de {crime_analisado}.\n
@@ -409,7 +430,11 @@ def analisa_prescricao(dicionario: dict):
             crime_analisado = dicionario['crime']
 
             if tempo_decorrido_para_prescricao > dic_prescricao[crime_analisado]:
-                parecer = f'''
+                parecer = f'''                
+                       Ref. ao processo: {processo}\n 
+                       Investigado(a): {reu}
+                       \n\n  
+                        
                        MM. Juíza,\n\n            
                        In casu, verifica-se que o(s) delito(s) investigado(s) possui(em) prazo prescricional máximo de {dic_prescricao[crime_analisado]} anos ({crime_analisado}).\n
                        Uma vez que os fatos datam de {corrige_ordem_da_data_str(dicionario['data_fato'])}, forçoso reconhecer a incidência da prescrição.\n            
@@ -426,6 +451,10 @@ def analisa_prescricao(dicionario: dict):
 
             else:
                 parecer = f'''
+                                  Ref. ao processo: {processo}\n 
+                                  Investigado(a): {reu} 
+                                  \n\n    
+                                    
                                   MM. Juíza,\n\n            
                                   In casu, verifica-se que o(s) delito(s) investigado(s) possui(em) prazo prescricional máximo de {dic_prescricao[crime_analisado]} anos ({crime_analisado}).\n
                                   Uma vez que os fatos datam de {corrige_ordem_da_data_str(dicionario['data_fato'])}, forçoso reconhecer que não houve a incidência da prescrição.\n            
@@ -458,6 +487,9 @@ def analisa_prescricao(dicionario: dict):
             # analisa entre a data do fato e o recebimento da denúncia
             if tempo_decorrido_para_prescricao > dic_prescricao[crime_analisado]:
                 parecer = f'''
+                       Ref. ao processo: {processo}\n 
+                       Investigado(a): {reu}  
+                       \n\n  
 
                        MM. Juíza,\n\n            
                        In casu, verifica-se que o(s) delito(s) investigado(s) possui(em) prazo prescricional máximo de {dic_prescricao[crime_analisado]} anos ({crime_analisado}).\n
@@ -492,6 +524,9 @@ def analisa_prescricao(dicionario: dict):
             # analisa entre a data do recebimento da denúncia e a data atual
             if tempo_decorrido_para_prescricao > dic_prescricao[crime_analisado]:
                 parecer = f'''
+                                  Ref. ao processo: {processo}\n 
+                                  Investigado(a): {reu} 
+                                  \n\n  
 
                                   MM. Juíza,\n\n            
                                   In casu, verifica-se que o(s) delito(s) investigado(s) possui(em) prazo prescricional máximo de {dic_prescricao[crime_analisado]} anos ({crime_analisado}).\n
@@ -509,8 +544,15 @@ def analisa_prescricao(dicionario: dict):
                 return resultado, parecer
 
             else:
-                parecer = 'Não prescreveu entre a data do fato e a data do recebimento da denuncia. ' \
-                          'Não prescreveu entre a data do recebimento da denuncia e a data atual'
+                parecer = f"""
+                            Ref. ao processo: {processo}\n 
+                            Investigado(a): {reu} 
+                            \n\n  
+
+                            MM. Juíza,\n\n  
+                            Não prescreveu entre a data do fato e a data do recebimento da denuncia. 
+                            Não prescreveu entre a data do recebimento da denuncia e a data atual."""
+
                 resultado['tempo_decorrido_para_prescricao'] = tempo_decorrido_para_prescricao
                 resultado['prazo_prescricao'] = dic_prescricao[crime_analisado]
                 resultado['tempo_suspensao'] = tempo_suspensao_dias
