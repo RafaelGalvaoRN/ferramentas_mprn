@@ -84,9 +84,30 @@ dic_prescricao = {'Ameaça': 3, 'Infanticídio': 12, "Lesão Corporal": 4,
 
 dic_prescricao_maria = {"Descumprimento de decisão judicial que defere MPU": 4}
 
-dic_trafico = { "Art. 33": 20, "Art. 33, §2": 8, "Art. 33, §3": 3, "Art. 34": 16,
+dic_trafico = { "Art. 28": 2, "Art. 33": 20, "Art. 33, §2": 8, "Art. 33, §3": 3, "Art. 34": 16,
                  "Art. 35": 16, "Art. 36": 20, "Art. 37": 12, "Art. 38":4, "Art. 39":8,
 
                  }
+
+dic_estatuto = {"Posse irregular de arma de fogo de uso permitido - Art. 12": 8,
+                 "Omissão de cautela - Art. 13":  4,
+                 "Porte ilegal de arma de fogo de uso permitido - Art 14": 8,
+                 "Disparo de arma de fogo - Art. 15": 8,
+                 "Posse ou porte ilegal de arma de fogo de uso restrito - Art. 16": 12,
+                 "Comércio ilegal de arma de fogo - Art. 17": 16,
+                 "Tráfico internacional de arma de fogo - Art. 18": 20,
+
+                 "Comércio ilegal de arma de fogo majorado - Art. 17 c/c Art 19": 20,
+                 "Tráfico internacional de arma de fogo majorado - Art. 18 c/c Art 19": 20,
+
+
+                 "Porte ilegal de arma de fogo de uso permitido majorado pela qualidade do agente - Art 14 c/c Art. 20": 12,
+                 "Disparo de arma de fogo majorado pela qualidade do agente - Art. 15 c/c Art. 20": 12,
+                 "Posse ou porte ilegal de arma de fogo de uso restrito majorado pela qualidade do agente - Art. 16 c/c Art. 20": 16,
+                 "Comércio ilegal de arma de fogo majorado pela qualidade do agente - Art. 17 c/c Art. 20": 20,
+                 "Tráfico internacional de arma de fogo majorado pela qualidade do agente - Art. 18 c/c Art. 20": 20,
+
+                 }
+
 
 lista = [item for item in dic_trafico]

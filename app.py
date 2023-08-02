@@ -29,7 +29,9 @@ with tab2:
     data_fato = st.date_input(label='Data do Fato', value=None, format="DD/MM/YYYY", min_value=data_minima)
     dicionario_final['data_fato'] = data_fato
 
-    legislacao = st.radio('Legislação', ['Código Penal', 'Lei Maria da Penha', 'Lei 11.343/06 - Lei de Drogas'])
+    legislacao = st.radio('Legislação', ['Código Penal', 'Lei Maria da Penha',
+                                         'Lei 11.343/06 - Lei de Drogas',
+                                         'Lei 10.826/03 - Estatuto do Desarmamento'])
 
     if legislacao == 'Código Penal':
 
@@ -45,6 +47,12 @@ with tab2:
 
     elif legislacao == 'Lei 11.343/06 - Lei de Drogas':
         crimes = [ crime for crime in dicionario_prescricao.dic_trafico.keys()]
+        tipo_penal = st.selectbox('Crime', crimes)
+        dicionario_final['crime'] = tipo_penal
+
+
+    elif legislacao == 'Lei 10.826/03 - Estatuto do Desarmamento':
+        crimes = [crime for crime in dicionario_prescricao.dic_estatuto.keys()]
         tipo_penal = st.selectbox('Crime', crimes)
         dicionario_final['crime'] = tipo_penal
 
@@ -154,6 +162,8 @@ with tab2:
         #inicia campo dados calculados
         st.header('Dados calculados')
         #pega resultado e parecer gerado pela funcao analisa prescricao
+        arg =  utilidades.analisa_prescricao(dicionario_final, processo, reu)
+        print(arg)
         dic_resultado, parecer = utilidades.analisa_prescricao(dicionario_final, processo, reu)
 
 
