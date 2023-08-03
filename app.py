@@ -1,8 +1,9 @@
 import streamlit as st
-import dicionario_prescricao
+import dicionario_legislacao
 import utilidades
 from datetime import datetime, timedelta
 import copy
+
 
 
 
@@ -35,24 +36,24 @@ with tab2:
 
     if legislacao == 'Código Penal':
 
-        crimes = [crime for crime in dicionario_prescricao.dic_prescricao.keys() ]
+        crimes = [crime for crime in dicionario_legislacao.codigo_penal.keys() ]
         crimes_ordenados = sorted(crimes)
         tipo_penal = st.selectbox('Código ', crimes_ordenados)
         dicionario_final['crime'] = tipo_penal
 
     elif legislacao == 'Lei Maria da Penha':
-        crimes = [ crime for crime in dicionario_prescricao.dic_prescricao_maria.keys()]
+        crimes = [ crime for crime in dicionario_legislacao.maria_da_penha.keys()]
         tipo_penal = st.selectbox('Crime', crimes)
         dicionario_final['crime'] = tipo_penal
 
     elif legislacao == 'Lei 11.343/06 - Lei de Drogas':
-        crimes = [ crime for crime in dicionario_prescricao.dic_trafico.keys()]
+        crimes = [ crime for crime in dicionario_legislacao.trafico.keys()]
         tipo_penal = st.selectbox('Crime', crimes)
         dicionario_final['crime'] = tipo_penal
 
 
     elif legislacao == 'Lei 10.826/03 - Estatuto do Desarmamento':
-        crimes = [crime for crime in dicionario_prescricao.dic_estatuto.keys()]
+        crimes = [crime for crime in dicionario_legislacao.estatuto_desarmamento.keys()]
         tipo_penal = st.selectbox('Crime', crimes)
         dicionario_final['crime'] = tipo_penal
 
@@ -104,8 +105,6 @@ with tab2:
             if dicionario_final['Dt_inicio_suspensao'] > dicionario_final['Dt_fim_suspensao']:
                 st.error('Data do início da suspensão não pode ser posterior à Data do fim da suspensão', icon="🚫")
 
-
-
             if dicionario_final.get('Dt_Denuncia', False):
                 if dicionario_final['Dt_inicio_suspensao'] < dicionario_final['Dt_Denuncia']:
                     st.error('Data do início da suspensão não pode ser anterior à Data do recebimento da Denúncia', icon="🚫")
@@ -149,6 +148,8 @@ with tab2:
         st.header('Dados informados')
         #faz uma copia do dicionario para o novo dicionario
         dic_dados_informados = copy.deepcopy(dicionario_final)
+
+
         #pega idade do autor informada, para calcular idade do autor em outro campo do streamlit
         dt_nascimento_autor = dic_dados_informados.get('idade_autor', None)
         dt_fato = dic_dados_informados.get('data_fato', None)
@@ -178,7 +179,6 @@ with tab2:
 
 
         dic_dados_informados = copy.deepcopy(dic_resultado)
-
 
 
 
