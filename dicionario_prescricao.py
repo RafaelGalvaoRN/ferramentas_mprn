@@ -1,6 +1,22 @@
-dic_prescricao = {'Ameaça': 3, 'Infanticídio': 12, "Lesão Corporal": 4,
-                  "Lesão Grave": 12, "Lesão Gravíssima": 12, "Homicídio simples": 20,
-                  "Homicídio qualificado": 20, "Feminicídio": 20, "Homicídio culposo": 8,
+dic_prescricao = {'Ameaça': 3, 'Infanticídio': 12, "Lesão Corporal - Art 129": 4,
+                 "Lesão Grave - Art 129, §1": 12, "Lesão Gravíssima - Art 129, §2": 12,
+                 "Lesão Corporal seguida de morte - Art 129, §3": 16,
+                 "Lesão Corporal culposa - Art 129, §6": 4,
+                 "Lesão Corporal privilegiada - Art 129, §4": 3,
+                 "Lesão Corporal grave privilegiada - Art 129, §4":12,
+                 "Lesão Corporal gravíssima privilegiada - Art 129, §4": 12,
+                 "Lesão Corporal majorada - Art 129, §7": 4,
+                 "Lesão Corporal grave majorada - Art 129, §7": 12,
+                 "Lesão Corporal gravíssima majorada - Art 129, §7": 16,
+                 "Lesão Corporal seguida de morte majorada - Art 129, §7": 20,
+                 "Lesão Corporal culposa majorada - Art 129, §7": 4,
+                 "Lesão Corporal em contexto de violência doméstica - Art 129, §9": 8,
+                 "Lesão Corporal grave em contexto de violência doméstica - Art 129, §10": 12,
+                 "Lesão Corporal gravíssima em contexto de violência doméstica - Art 129, §10": 16,
+                 "Lesão Corporal seguida de morte em contexto de violência doméstica - Art 129, §10": 20,
+                 "Lesão Corporal em contexto de violência doméstica contra pessoa deficiente - Art 129, §11": 8,
+                 "Lesão Corporal contra a mulher, por razões da condição do sexo feminino - Art 129, §12": 8,
+                  "Homicídio simples": 20, "Homicídio qualificado": 20, "Feminicídio": 20, "Homicídio culposo": 8,
                   "Induzimento, instigação ou auxílio a suicídio ou a automutilação": 4, "Calunia": 4,
                   "Difamação": 3, "Injúria": 3, "Abandono de incapaz": 8,
                   "Abandono de incapaz com resultado de lesão grave": 12,
@@ -110,4 +126,5 @@ dic_estatuto = {"Posse irregular de arma de fogo de uso permitido - Art. 12": 8,
                  }
 
 
-lista = [item for item in dic_trafico]
+lista = [item for item in dic_prescricao]
+print(dic_prescricao)
