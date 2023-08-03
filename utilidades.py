@@ -151,14 +151,23 @@ def calcula_se_e_maior_de_setenta_anos(data_nascimento: date) -> bool:
     return idade_na_data_atual >= 70
 
 
+def calcula_data_prescricao(data_do_fato, tempo_prescricao_crime, reduz_metade=1, periodo_suspenso=0):
+    # Convertendo a string da data para um objeto datetime
 
-def calcula_data_prescricao(data_do_fato, tempo_prescricao_crime, periodo_suspenso=0, reduz_metade=1):
-    # Se metade_tempo for True, usa a metade do tempo de prescrição
+    # Se reduz_metade for diferente de 1, o tempo de prescrição é ajustado
+    tempo_prescricao_crime *= reduz_metade
+
+    # Converte periodo_suspenso para valor absoluto, garantindo que seja positivo
     periodo_suspenso = abs(periodo_suspenso)
 
-    tempo_prescricao_crime = tempo_prescricao_crime * reduz_metade
 
-    data_prescricao = data_do_fato + relativedelta(years=+tempo_prescricao_crime) + relativedelta(days=+periodo_suspenso)
+
+    # Convertendo anos para meses
+    tempo_prescricao_crime_meses = int(tempo_prescricao_crime * 12)
+
+    data_prescricao = data_do_fato + relativedelta(months=+tempo_prescricao_crime_meses) + relativedelta(
+        days=+periodo_suspenso)
+
     data_prescricao = data_prescricao.strftime('%d/%m/%Y')
 
     return data_prescricao
@@ -432,6 +441,7 @@ def analisa_prescricao(dicionario: dict, processo: str = None, reu: str = None):
                 resultado['Data da prescrição'] = calcula_data_prescricao(dicionario['data_fato'],
                                                                           dic_prescricao[crime_analisado],
                                                                           reduz_metade=reducao_da_prescricao_metade, periodo_suspenso=tempo_suspensao_dias)
+
 
                 return resultado, parecer
 

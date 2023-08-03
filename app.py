@@ -169,9 +169,9 @@ with tab2:
 
 
 
+
         #adiciona data de nascimento e calculo da idade do autor no dic
         if dt_nascimento_autor:
-            dic_resultado['Data de nascimento do autor'] = dt_nascimento_autor
             dic_resultado['Idade atual do autor (anos)'] = utilidades.calcular_idade(dt_nascimento_autor)
 
             dic_resultado['Idade do autor na data do fato (anos)'] = utilidades.calcular_idade_na_data(dt_nascimento_autor,
@@ -179,7 +179,6 @@ with tab2:
 
 
         dic_dados_informados = copy.deepcopy(dic_resultado)
-
 
 
         dic_dados_informados = utilidades.normaliza_key_dic_dados_calculados(dic_dados_informados)
