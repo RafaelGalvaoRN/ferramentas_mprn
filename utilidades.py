@@ -231,8 +231,13 @@ def analisa_prescricao(dicionario: dict, processo: str = None, reu: str = None):
                                              dicionario['data_fato']) or calcula_se_e_maior_de_setenta_anos(
             dicionario['idade_autor']):
             reducao_da_prescricao_metade = 1 / 2
+
+            crime_analisado = dicionario['crime']
+            dic_prescricao[crime_analisado] = dic_prescricao[crime_analisado] * reducao_da_prescricao_metade
+
             resultado['Redução da Prescrição pela metade?'] = True
-        resultado['Redução da Prescrição pela metade?'] = False
+        else:
+            resultado['Redução da Prescrição pela metade?'] = False
 
     if dicionario['suspensao_prescricao_bool'] == False:
 
@@ -241,7 +246,7 @@ def analisa_prescricao(dicionario: dict, processo: str = None, reu: str = None):
 
             # seta tempo decorrido, considerando a data do fato
             tempo_decorrido_para_prescricao = calcula_diferenca_entre_data_ate_atual(
-                dicionario['data_fato']) * reducao_da_prescricao_metade
+                dicionario['data_fato'])
 
             crime_analisado = dicionario['crime']
 
@@ -252,7 +257,7 @@ def analisa_prescricao(dicionario: dict, processo: str = None, reu: str = None):
                 \n\n          
                 
                 MM. Juíza,\n\n            
-                In casu, verifica-se que o(s) delito(s) investigado(s) possui(em) prazo prescricional máximo de {dic_prescricao[crime_analisado]} anos ({crime_analisado}).\n
+                In casu, verifica-se que o(s) delito(s) investigado(s) possui(em) prazo prescricional máximo de {dic_prescricao[crime_analisado]} anos ({crime_analisado}), considerando a idade da parte autora (CP, Art. 115).\n
                 Uma vez que os fatos datam de {corrige_ordem_da_data_str(dicionario['data_fato'])}, forçoso reconhecer a incidência da prescrição.\n            
                 Insta pontuar que não se operou nenhuma causa de suspensão da prescrição da data do fato até a presente data.\n            
                 Ante o exposto, o MP requer o reconhecimento da extinção da punibilidade, nos termos do art. 107, inciso IV, do CP.\n            
@@ -276,7 +281,7 @@ def analisa_prescricao(dicionario: dict, processo: str = None, reu: str = None):
                            \n\n         
                                 
                            MM. Juíza,\n\n            
-                           In casu, verifica-se que o(s) delito(s) investigado(s) possui(em) prazo prescricional máximo de {dic_prescricao[crime_analisado]} anos ({crime_analisado}).\n
+                           In casu, verifica-se que o(s) delito(s) investigado(s) possui(em) prazo prescricional máximo de {dic_prescricao[crime_analisado]} anos ({crime_analisado}), considerando a idade da parte autora (CP, Art. 115)\n
                            Uma vez que os fatos datam de {corrige_ordem_da_data_str(dicionario['data_fato'])}, forçoso reconhecer que não houve a incidência da prescrição.\n            
                            Insta pontuar que não se operou nenhuma causa de suspensão ou interrupção da prescrição da data do fato até a presente data.\n
                            Não houve oferecimento de denúncia e regular recebimento da peça acusatória, apto à interrupção do prazo prescricional.\n             
@@ -302,7 +307,7 @@ def analisa_prescricao(dicionario: dict, processo: str = None, reu: str = None):
             print('Analisando entre data do fato e data recebimento da denuncia:')
             tempo_decorrido_para_prescricao = calcula_diferenca_entre_duas_datas(dicionario['data_fato'],
                                                                                  dicionario[
-                                                                                     'Dt_Denuncia']) * reducao_da_prescricao_metade
+                                                                                     'Dt_Denuncia'])
 
             # analisa entre a data do fato e o recebimento da denúncia
             if tempo_decorrido_para_prescricao > dic_prescricao[crime_analisado]:
@@ -312,7 +317,7 @@ def analisa_prescricao(dicionario: dict, processo: str = None, reu: str = None):
                 \n\n  
 
                 MM. Juíza,\n\n            
-                In casu, verifica-se que o(s) delito(s) investigado(s) possui(em) prazo prescricional máximo de {dic_prescricao[crime_analisado]} anos ({crime_analisado}).\n
+                In casu, verifica-se que o(s) delito(s) investigado(s) possui(em) prazo prescricional máximo de {dic_prescricao[crime_analisado]} anos ({crime_analisado}), considerando a idade da parte autora (CP, Art. 115).\n
                 Uma vez que os fatos datam de {corrige_ordem_da_data_str(dicionario['data_fato'])}, forçoso reconhecer a incidência da prescrição.\n            
                 Insta pontuar que a denúncia foi recebida em {corrige_ordem_da_data_str(dicionario['Dt_Denuncia'])} mas antes desta causa interruptiva, o jus puniendi estatal já se encontrava prescrito, uma vez ter decorrido {tempo_decorrido_para_prescricao} anos após a data do fato.\n            
                 Ante o exposto, o MP requer o reconhecimento da extinção da punibilidade, nos termos do art. 107, inciso IV, do CP.\n            
@@ -331,7 +336,7 @@ def analisa_prescricao(dicionario: dict, processo: str = None, reu: str = None):
 
             print('Analisando entre data do recebimento da denuncia e a data atual:')
             tempo_decorrido_para_prescricao = calcula_diferenca_entre_data_ate_atual(
-                dicionario['Dt_Denuncia']) * reducao_da_prescricao_metade
+                dicionario['Dt_Denuncia'])
 
             # analisa entre a data do recebimento da denúncia e a data atual
             if tempo_decorrido_para_prescricao > dic_prescricao[crime_analisado]:
@@ -341,7 +346,7 @@ def analisa_prescricao(dicionario: dict, processo: str = None, reu: str = None):
                            \n\n  
 
                            MM. Juíza,\n\n            
-                           In casu, verifica-se que o(s) delito(s) investigado(s) possui(em) prazo prescricional máximo de {dic_prescricao[crime_analisado]} anos ({crime_analisado}).\n
+                           In casu, verifica-se que o(s) delito(s) investigado(s) possui(em) prazo prescricional máximo de {dic_prescricao[crime_analisado]} anos ({crime_analisado}), considerando a idade da parte autora (CP, Art. 115). \n
                            Uma vez que os fatos datam de {corrige_ordem_da_data_str(dicionario['data_fato'])}, forçoso reconhecer a incidência da prescrição.\n            
                            Insta pontuar que a denúncia foi recebida em {dicionario['Dt_Denuncia']} tendo, após esta causa interruptiva se operado a prescrição do jus puniendi estatal, uma vez ter decorrido {tempo_decorrido_para_prescricao} anos após tal causa interruptiva.\n            
                            Ante o exposto, o MP requer o reconhecimento da extinção da punibilidade, nos termos do art. 107, inciso IV, do CP.\n            
@@ -365,7 +370,7 @@ def analisa_prescricao(dicionario: dict, processo: str = None, reu: str = None):
                 
                 MM. Juíza,\n\n            
                 In casu, verifica-se que o(s) delito(s) investigado(s) possui(em) prazo prescricional máximo de {dic_prescricao[crime_analisado]} anos, uma vez a 
-                 conduta se subsumir ao tipo penal de {crime_analisado}.\n
+                 conduta se subsumir ao tipo penal de {crime_analisado}, considerando a idade da parte autora (CP, Art. 115).\n
                 Uma vez que os fatos datam de {corrige_ordem_da_data_str(dicionario['data_fato'])}, forçoso reconhecer que não se operou a prescrição.\n            
                 Insta pontuar que fora analisado o marco interruptivo atinente ao recebimento da denúncia quando da análise do procedimento (CP, Art. 117, Inc. I).\n            
                 Ante o exposto, o MP requer o prosseguimento do feito.\n            
@@ -388,9 +393,10 @@ def analisa_prescricao(dicionario: dict, processo: str = None, reu: str = None):
 
         # analisa sem ter havido recebimento da denuncia
         if dicionario['recebimento_denuncia_bool'] == False:
+
             # seta tempo decorrido, considerando a data do fato
             tempo_decorrido_para_prescricao = calcula_diferenca_entre_data_ate_atual_em_dias(
-                dicionario['data_fato']) * reducao_da_prescricao_metade
+                dicionario['data_fato'])
             # calcula tempo de suspensao em dias
 
             tempo_suspensao_dias = (dicionario['Dt_inicio_suspensao'] - dicionario['Dt_fim_suspensao']).days
@@ -412,7 +418,7 @@ def analisa_prescricao(dicionario: dict, processo: str = None, reu: str = None):
                        \n\n  
                         
                        MM. Juíza,\n\n            
-                       In casu, verifica-se que o(s) delito(s) investigado(s) possui(em) prazo prescricional máximo de {dic_prescricao[crime_analisado]} anos ({crime_analisado}).\n
+                       In casu, verifica-se que o(s) delito(s) investigado(s) possui(em) prazo prescricional máximo de {dic_prescricao[crime_analisado]} anos ({crime_analisado}), considerando a idade da parte autora.\n
                        Uma vez que os fatos datam de {corrige_ordem_da_data_str(dicionario['data_fato'])}, forçoso reconhecer a incidência da prescrição.\n            
                        Insta pontuar que se operou causa de suspensão da prescrição da data do fato até a presente data, tendo sido considerado o tempo de {tempo_suspensao_dias} dias no cálculo, a título de decote.\n            
                        Ante o exposto, o MP requer o reconhecimento da extinção da punibilidade, nos termos do art. 107, inciso IV, do CP.\n            
@@ -438,9 +444,9 @@ def analisa_prescricao(dicionario: dict, processo: str = None, reu: str = None):
                                   \n\n    
                                     
                                   MM. Juíza,\n\n            
-                                  In casu, verifica-se que o(s) delito(s) investigado(s) possui(em) prazo prescricional máximo de {dic_prescricao[crime_analisado]} anos ({crime_analisado}).\n
+                                  In casu, verifica-se que o(s) delito(s) investigado(s) possui(em) prazo prescricional máximo de {dic_prescricao[crime_analisado]} anos ({crime_analisado}), considerando a idade da parte autora.\n
                                   Uma vez que os fatos datam de {corrige_ordem_da_data_str(dicionario['data_fato'])}, forçoso reconhecer que não houve a incidência da prescrição.\n            
-                                  Insta pontuar que foi considerado no cálculo o tempo no qual ocorreu a suspensão da prescrição da data do fato até a presente data, o que ensejou o decote do interregno de {abs(tempo_suspensao_dias)} dias.\n
+                                  Insta pontuar que foi considerado no cálculo o tempo no qual ocorreu a suspensão da prescrição, o que ensejou o decote do interregno de {abs(tempo_suspensao_dias)} dias.\n
                                   Não houve oferecimento de denúncia e regular recebimento da peça acusatória, apto à interrupção do prazo prescricional.\n             
                                   Ante o exposto, o MP requer o prosseguimento do feito.\n            
                                   Pede deferimento.\n            
@@ -471,7 +477,7 @@ def analisa_prescricao(dicionario: dict, processo: str = None, reu: str = None):
             print('Analisando entre data do fato e data recebimento da denuncia:')
             tempo_decorrido_para_prescricao = calcula_diferenca_entre_duas_datas(dicionario['data_fato'],
                                                                                  dicionario[
-                                                                                     'Dt_Denuncia']) * reducao_da_prescricao_metade
+                                                                                     'Dt_Denuncia'])
 
             # analisa entre a data do fato e o recebimento da denúncia
             if tempo_decorrido_para_prescricao > dic_prescricao[crime_analisado]:
@@ -481,10 +487,10 @@ def analisa_prescricao(dicionario: dict, processo: str = None, reu: str = None):
                        \n\n  
 
                        MM. Juíza,\n\n            
-                       In casu, verifica-se que o(s) delito(s) investigado(s) possui(em) prazo prescricional máximo de {dic_prescricao[crime_analisado]} anos ({crime_analisado}).\n
+                       In casu, verifica-se que o(s) delito(s) investigado(s) possui(em) prazo prescricional máximo de {dic_prescricao[crime_analisado]} anos ({crime_analisado}), considerando a idade da parte autora (CP, Art. 115).\n
                        Uma vez que os fatos datam de {corrige_ordem_da_data_str(dicionario['data_fato'])}, forçoso reconhecer a incidência da prescrição.\n            
                        Insta pontuar que a denúncia foi recebida em {corrige_ordem_da_data_str(dicionario['Dt_Denuncia'])} mas antes desta causa interruptiva, o jus puniendi estatal já se encontrava prescrito, uma vez ter decorrido {tempo_decorrido_para_prescricao} anos após a data do fato.\n            
-                       Foi considerado no cálculo o tempo no qual ocorreu a suspensão da prescrição da data do fato até a presente data, o que ensejou o decote do interregno de {tempo_suspensao_dias} anos.\n
+                       Foi considerado no cálculo o tempo no qual ocorreu a suspensão da prescrição, o que ensejou o decote do interregno de {abs(tempo_suspensao_dias)} dias.\n
                        Ante o exposto, o MP requer o reconhecimento da extinção da punibilidade, nos termos do art. 107, inciso IV, do CP.\n            
                        Pede deferimento.\n            
                        '''
@@ -505,7 +511,8 @@ def analisa_prescricao(dicionario: dict, processo: str = None, reu: str = None):
             print('Analisando entre data do recebimento da denuncia e a data atual:')
 
             tempo_decorrido_para_prescricao = calcula_diferenca_entre_data_ate_atual_em_dias(
-                dicionario['Dt_Denuncia']) * reducao_da_prescricao_metade
+                dicionario['Dt_Denuncia'])
+
             # calcula tempo de suspensao em dias
             tempo_suspensao_dias = (dicionario['Dt_inicio_suspensao'] - dicionario['Dt_fim_suspensao']).days
 
@@ -523,10 +530,10 @@ def analisa_prescricao(dicionario: dict, processo: str = None, reu: str = None):
                                   \n\n  
 
                                   MM. Juíza,\n\n            
-                                  In casu, verifica-se que o(s) delito(s) investigado(s) possui(em) prazo prescricional máximo de {dic_prescricao[crime_analisado]} anos ({crime_analisado}).\n
+                                  In casu, verifica-se que o(s) delito(s) investigado(s) possui(em) prazo prescricional máximo de {dic_prescricao[crime_analisado]} anos ({crime_analisado}), considerando a idade da parte autora (CP, Art. 115).\n
                                   Uma vez que os fatos datam de {corrige_ordem_da_data_str(dicionario['data_fato'])}, forçoso reconhecer a incidência da prescrição.\n            
                                   Insta pontuar que a denúncia foi recebida em {corrige_ordem_da_data_str(dicionario['Dt_Denuncia'])} tendo, após esta causa interruptiva se operado a prescrição do jus puniendi estatal, uma vez ter decorrido {tempo_decorrido_para_prescricao} anos após tal causa interruptiva.\n            
-                                  Foi considerado no cálculo o tempo no qual ocorreu a suspensão da prescrição da data do fato até a presente data, o que ensejou o decote do interregno de {tempo_suspensao_dias} anos.\n
+                                  Foi considerado no cálculo o tempo no qual ocorreu a suspensão da prescrição, o que ensejou o decote do interregno de {abs(tempo_suspensao_dias)} dias.\n
                                   Ante o exposto, o MP requer o reconhecimento da extinção da punibilidade, nos termos do art. 107, inciso IV, do CP.\n            
                                   Pede deferimento.\n            
                                   '''
