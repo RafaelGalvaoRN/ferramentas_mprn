@@ -233,6 +233,8 @@ def analisa_prescricao(dicionario: dict, processo: str = None, reu: str = None):
             reducao_da_prescricao_metade = 1 / 2
 
             crime_analisado = dicionario['crime']
+            print(crime_analisado)
+            print('='*50)
             dic_prescricao[crime_analisado] = dic_prescricao[crime_analisado] * reducao_da_prescricao_metade
 
             resultado['Redução da Prescrição pela metade?'] = True
@@ -635,6 +637,10 @@ def normaliza_value_dic_dados_informados(dicionario_corrigir: dict) -> dict:
 
 
 def normaliza_key_dic_dados_calculados(dicionario_corrigir: dict) -> dict:
+
+
+
+
     dicionario_normalizado = dicionario_corrigir
 
     if 'prazo_prescricao' in dicionario_corrigir:
@@ -653,9 +659,8 @@ def normaliza_key_dic_dados_calculados(dicionario_corrigir: dict) -> dict:
         dicionario_normalizado['Idade do autor na data do fato (anos)'] = dicionario_corrigir[
             'Idade do autor na data do fato (anos)']
 
-    if 'Redução da Prescrição pela metade?' in dicionario_corrigir:
-        dicionario_normalizado['Redução da Prescrição pela metade?'] = dicionario_corrigir[
-            'Redução da Prescrição pela metade?']
+
+
 
     return dicionario_normalizado
 
@@ -663,15 +668,19 @@ def normaliza_key_dic_dados_calculados(dicionario_corrigir: dict) -> dict:
 def normaliza_value_dic_dados_calculados(dicionario_corrigir: dict) -> dict:
     dicionario_normalizado = dicionario_corrigir
 
+
+
+
     for key, valores in dicionario_corrigir.items():
 
         if isinstance(valores, int):
             dicionario_normalizado[key] = abs(valores)
 
-        if valores == True:
+        if valores is True:
             dicionario_normalizado[key] = "Sim"
 
-        if valores == False:
+        if valores is False:
             dicionario_normalizado[key] = "Não"
+
 
     return dicionario_normalizado

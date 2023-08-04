@@ -149,6 +149,8 @@ with tab2:
         # faz uma copia do dicionario para o novo dicionario
         dic_dados_informados = copy.deepcopy(dicionario_final)
 
+
+
         # pega idade do autor informada, para calcular idade do autor em outro campo do streamlit
         dt_nascimento_autor = dic_dados_informados.get('idade_autor', None)
         dt_fato = dic_dados_informados.get('data_fato', None)
@@ -164,6 +166,8 @@ with tab2:
 
         # pega resultado e parecer gerado pela funcao analisa prescricao
         dic_resultado, parecer = utilidades.analisa_prescricao(dicionario_final, processo, reu)
+
+
 
         # adiciona data de nascimento e calculo da idade do autor no dic
         if dt_nascimento_autor:
