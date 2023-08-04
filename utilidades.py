@@ -3,10 +3,10 @@ import pandas as pd
 import dicionario_legislacao
 from dateutil.relativedelta import relativedelta
 
-
-
 dic_prescricao = {**dicionario_legislacao.codigo_penal, **dicionario_legislacao.maria_da_penha,
-                    **dicionario_legislacao.trafico, **dicionario_legislacao.estatuto_desarmamento}
+                  **dicionario_legislacao.trafico, **dicionario_legislacao.estatuto_desarmamento,
+                  **dicionario_legislacao.lcp}
+
 
 #
 #
@@ -84,14 +84,13 @@ def calcula_diferenca_entre_data_ate_atual_em_dias(data: datetime) -> int:
     # calcula a diferenca entre a data do fato e a data atual
     diferenca_dt_fato_x_dt_atual_dias = (data_atual - data_fato).days
 
-
     return diferenca_dt_fato_x_dt_atual_dias
 
 
 def calcula_diferenca_entre_duas_datas(data_antiga: date, data_nova: date) -> int:
     # calcula a diferença entre as duas datas
     anos = data_nova.year - data_antiga.year - (
-        (data_nova.month, data_nova.day) < (data_antiga.month, data_antiga.day))
+            (data_nova.month, data_nova.day) < (data_antiga.month, data_antiga.day))
 
     # se a diferença for negativa, retorna 0
     if anos < 0:
@@ -137,7 +136,6 @@ def calcula_se_e_menor_21_tempo_crime(data_nascimento: date, data_fato: date) ->
 
 
 def calcula_se_e_maior_de_setenta_anos(data_nascimento: date) -> bool:
-
     # pega data fato
     data_atual = datetime.today()
 
@@ -160,8 +158,6 @@ def calcula_data_prescricao(data_do_fato, tempo_prescricao_crime, reduz_metade=1
     # Converte periodo_suspenso para valor absoluto, garantindo que seja positivo
     periodo_suspenso = abs(periodo_suspenso)
 
-
-
     # Convertendo anos para meses
     tempo_prescricao_crime_meses = int(tempo_prescricao_crime * 12)
 
@@ -171,7 +167,6 @@ def calcula_data_prescricao(data_do_fato, tempo_prescricao_crime, reduz_metade=1
     data_prescricao = data_prescricao.strftime('%d/%m/%Y')
 
     return data_prescricao
-
 
 
 # def calcula_diferenca_duas_datas_em_dias(data_antiga: str, data_nova: str) -> int:
@@ -220,38 +215,33 @@ def calcular_idade_na_data(data_de_nascimento, data_do_fato):
 
     return idade
 
+
 def analisa_prescricao(dicionario: dict, processo: str = None, reu: str = None):
     if not processo:
         processo = "Não informado"
     if not reu:
         reu = "Não informado"
 
-
     resultado = {}
     reducao_da_prescricao_metade = 1
-
-
 
     if dicionario['verificacao_idade'] == True:
 
         if calcula_se_e_menor_21_tempo_crime(dicionario['idade_autor'],
                                              dicionario['data_fato']) or calcula_se_e_maior_de_setenta_anos(
-                dicionario['idade_autor']):
-
-            reducao_da_prescricao_metade = 1/2
+            dicionario['idade_autor']):
+            reducao_da_prescricao_metade = 1 / 2
             resultado['Redução da Prescrição pela metade?'] = True
         resultado['Redução da Prescrição pela metade?'] = False
 
-
-
     if dicionario['suspensao_prescricao_bool'] == False:
-
 
         # analisa sem ter havido recebimento da denuncia
         if dicionario['recebimento_denuncia_bool'] == False:
 
             # seta tempo decorrido, considerando a data do fato
-            tempo_decorrido_para_prescricao = calcula_diferenca_entre_data_ate_atual(dicionario['data_fato']) * reducao_da_prescricao_metade
+            tempo_decorrido_para_prescricao = calcula_diferenca_entre_data_ate_atual(
+                dicionario['data_fato']) * reducao_da_prescricao_metade
 
             crime_analisado = dicionario['crime']
 
@@ -272,9 +262,9 @@ def analisa_prescricao(dicionario: dict, processo: str = None, reu: str = None):
                 resultado['Decurso de prazo prescricional (arredondado em anos)'] = tempo_decorrido_para_prescricao
                 resultado['prazo_prescricao'] = dic_prescricao[crime_analisado]
                 resultado['resultado'] = True
-                resultado['Data da prescrição'] = calcula_data_prescricao(dicionario['data_fato'], dic_prescricao[crime_analisado], reduz_metade=reducao_da_prescricao_metade)
-
-
+                resultado['Data da prescrição'] = calcula_data_prescricao(dicionario['data_fato'],
+                                                                          dic_prescricao[crime_analisado],
+                                                                          reduz_metade=reducao_da_prescricao_metade)
 
                 return resultado, parecer
 
@@ -311,8 +301,8 @@ def analisa_prescricao(dicionario: dict, processo: str = None, reu: str = None):
 
             print('Analisando entre data do fato e data recebimento da denuncia:')
             tempo_decorrido_para_prescricao = calcula_diferenca_entre_duas_datas(dicionario['data_fato'],
-                                                                                 dicionario['Dt_Denuncia']) * reducao_da_prescricao_metade
-
+                                                                                 dicionario[
+                                                                                     'Dt_Denuncia']) * reducao_da_prescricao_metade
 
             # analisa entre a data do fato e o recebimento da denúncia
             if tempo_decorrido_para_prescricao > dic_prescricao[crime_analisado]:
@@ -337,13 +327,11 @@ def analisa_prescricao(dicionario: dict, processo: str = None, reu: str = None):
                                                                           dic_prescricao[crime_analisado],
                                                                           reduz_metade=reducao_da_prescricao_metade)
 
-
-
                 return resultado, parecer
 
-
             print('Analisando entre data do recebimento da denuncia e a data atual:')
-            tempo_decorrido_para_prescricao = calcula_diferenca_entre_data_ate_atual(dicionario['Dt_Denuncia']) * reducao_da_prescricao_metade
+            tempo_decorrido_para_prescricao = calcula_diferenca_entre_data_ate_atual(
+                dicionario['Dt_Denuncia']) * reducao_da_prescricao_metade
 
             # analisa entre a data do recebimento da denúncia e a data atual
             if tempo_decorrido_para_prescricao > dic_prescricao[crime_analisado]:
@@ -401,7 +389,8 @@ def analisa_prescricao(dicionario: dict, processo: str = None, reu: str = None):
         # analisa sem ter havido recebimento da denuncia
         if dicionario['recebimento_denuncia_bool'] == False:
             # seta tempo decorrido, considerando a data do fato
-            tempo_decorrido_para_prescricao = calcula_diferenca_entre_data_ate_atual_em_dias(dicionario['data_fato']) * reducao_da_prescricao_metade
+            tempo_decorrido_para_prescricao = calcula_diferenca_entre_data_ate_atual_em_dias(
+                dicionario['data_fato']) * reducao_da_prescricao_metade
             # calcula tempo de suspensao em dias
 
             tempo_suspensao_dias = (dicionario['Dt_inicio_suspensao'] - dicionario['Dt_fim_suspensao']).days
@@ -435,13 +424,10 @@ def analisa_prescricao(dicionario: dict, processo: str = None, reu: str = None):
                 resultado['tempo_suspensao'] = tempo_suspensao_dias
                 resultado['resultado'] = True
 
-
-
-
                 resultado['Data da prescrição'] = calcula_data_prescricao(dicionario['data_fato'],
                                                                           dic_prescricao[crime_analisado],
-                                                                          reduz_metade=reducao_da_prescricao_metade, periodo_suspenso=tempo_suspensao_dias)
-
+                                                                          reduz_metade=reducao_da_prescricao_metade,
+                                                                          periodo_suspenso=tempo_suspensao_dias)
 
                 return resultado, parecer
 
@@ -465,10 +451,10 @@ def analisa_prescricao(dicionario: dict, processo: str = None, reu: str = None):
                 resultado['tempo_suspensao'] = tempo_suspensao_dias
                 resultado['resultado'] = False
 
-
                 resultado['Data da prescrição'] = calcula_data_prescricao(dicionario['data_fato'],
                                                                           dic_prescricao[crime_analisado],
-                                                                          reduz_metade=reducao_da_prescricao_metade, periodo_suspenso=tempo_suspensao_dias)
+                                                                          reduz_metade=reducao_da_prescricao_metade,
+                                                                          periodo_suspenso=tempo_suspensao_dias)
 
                 return resultado, parecer
 
@@ -484,7 +470,8 @@ def analisa_prescricao(dicionario: dict, processo: str = None, reu: str = None):
 
             print('Analisando entre data do fato e data recebimento da denuncia:')
             tempo_decorrido_para_prescricao = calcula_diferenca_entre_duas_datas(dicionario['data_fato'],
-                                                                                 dicionario['Dt_Denuncia']) * reducao_da_prescricao_metade
+                                                                                 dicionario[
+                                                                                     'Dt_Denuncia']) * reducao_da_prescricao_metade
 
             # analisa entre a data do fato e o recebimento da denúncia
             if tempo_decorrido_para_prescricao > dic_prescricao[crime_analisado]:
@@ -513,12 +500,12 @@ def analisa_prescricao(dicionario: dict, processo: str = None, reu: str = None):
 
                 return resultado, parecer
 
-
             # analisa entre o recebimento da denúncia e a presente data
 
             print('Analisando entre data do recebimento da denuncia e a data atual:')
 
-            tempo_decorrido_para_prescricao = calcula_diferenca_entre_data_ate_atual_em_dias(dicionario['Dt_Denuncia']) * reducao_da_prescricao_metade
+            tempo_decorrido_para_prescricao = calcula_diferenca_entre_data_ate_atual_em_dias(
+                dicionario['Dt_Denuncia']) * reducao_da_prescricao_metade
             # calcula tempo de suspensao em dias
             tempo_suspensao_dias = (dicionario['Dt_inicio_suspensao'] - dicionario['Dt_fim_suspensao']).days
 
@@ -590,8 +577,7 @@ def converte_dic_dataframe_vertical(dicionario_final: dict):
 
 
 def normaliza_key_dic_dados_informados(dicionario_corrigir: dict) -> dict:
-    dicionario_normalizado ={}
-
+    dicionario_normalizado = {}
 
     if 'data_fato' in dicionario_corrigir:
         dicionario_normalizado['Data do Fato'] = dicionario_corrigir.pop('data_fato')
@@ -615,7 +601,8 @@ def normaliza_key_dic_dados_informados(dicionario_corrigir: dict) -> dict:
         dicionario_normalizado['Data do fim da suspensão'] = dicionario_corrigir.pop('Dt_fim_suspensao')
 
     if 'verificacao_idade' in dicionario_corrigir:
-        dicionario_normalizado['Houve verificação da idade do autor do fato?'] = dicionario_corrigir.pop('verificacao_idade')
+        dicionario_normalizado['Houve verificação da idade do autor do fato?'] = dicionario_corrigir.pop(
+            'verificacao_idade')
 
     if 'idade_autor' in dicionario_corrigir:
         dicionario_normalizado['Data de nascimento do autor do fato'] = dicionario_corrigir.pop('idade_autor')
@@ -624,9 +611,7 @@ def normaliza_key_dic_dados_informados(dicionario_corrigir: dict) -> dict:
 
 
 def normaliza_value_dic_dados_informados(dicionario_corrigir: dict) -> dict:
-
     dicionario_normalizado = dict(dicionario_corrigir)
-
 
     for key, valores in dicionario_corrigir.items():
 
@@ -639,12 +624,10 @@ def normaliza_value_dic_dados_informados(dicionario_corrigir: dict) -> dict:
         if valores == False:
             dicionario_normalizado[key] = "Não"
 
-
     return dicionario_normalizado
 
 
 def normaliza_key_dic_dados_calculados(dicionario_corrigir: dict) -> dict:
-
     dicionario_normalizado = dicionario_corrigir
 
     if 'prazo_prescricao' in dicionario_corrigir:
@@ -664,18 +647,14 @@ def normaliza_key_dic_dados_calculados(dicionario_corrigir: dict) -> dict:
             'Idade do autor na data do fato (anos)']
 
     if 'Redução da Prescrição pela metade?' in dicionario_corrigir:
-        dicionario_normalizado['Redução da Prescrição pela metade?'] = dicionario_corrigir['Redução da Prescrição pela metade?']
-
+        dicionario_normalizado['Redução da Prescrição pela metade?'] = dicionario_corrigir[
+            'Redução da Prescrição pela metade?']
 
     return dicionario_normalizado
 
 
 def normaliza_value_dic_dados_calculados(dicionario_corrigir: dict) -> dict:
-
-
-
     dicionario_normalizado = dicionario_corrigir
-
 
     for key, valores in dicionario_corrigir.items():
 
@@ -687,7 +666,5 @@ def normaliza_value_dic_dados_calculados(dicionario_corrigir: dict) -> dict:
 
         if valores == False:
             dicionario_normalizado[key] = "Não"
-
-
 
     return dicionario_normalizado
