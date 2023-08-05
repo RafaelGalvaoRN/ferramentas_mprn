@@ -98,6 +98,9 @@ with tab2:
 
     if st.button('Calcular'):
 
+
+
+
         if dicionario_final['suspensao_prescricao_bool']:
 
             if dicionario_final['Dt_inicio_suspensao'] > dicionario_final['Dt_fim_suspensao']:
@@ -164,8 +167,25 @@ with tab2:
         # inicia campo dados calculados
         st.header('Dados calculados')
 
+        #pega prescricao legal do crime, antes do dict original ser alterado
+        prescricao_legal = utilidades.dic_prescricao[tipo_penal]
+
         # pega resultado e parecer gerado pela funcao analisa prescricao
         dic_resultado, parecer = utilidades.analisa_prescricao(dicionario_final, processo, reu)
+
+        #adiciona prescriçao legal in abstracto no dicionário
+        dic_resultado['Prescrição Legal in abstracto'] = prescricao_legal
+
+
+
+
+
+
+
+
+
+
+
 
 
 
