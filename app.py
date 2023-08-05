@@ -23,7 +23,9 @@ with tab2:
     reu = st.text_input(label='Réu', max_chars=30)
 
     data_minima = datetime.today() - timedelta(days=60 * 365)
-    data_fato = st.date_input(label='Data do Fato', value=None, format="DD/MM/YYYY", min_value=data_minima)
+    data_fato = st.date_input(label='Data do Fato', value=None, format="DD/MM/YYYY", min_value=data_minima,
+                              help="Art. 111 - A prescrição, antes de transitar em julgado a sentença final, começa a correr: I - do dia em que o crime se consumou; II - no caso de tentativa, do dia em que cessou a atividade criminosa; III - nos crimes permanentes, do dia em que cessou a permanência; IV - nos de bigamia e nos de falsificação ou alteração de assentamento do registro civil, da data em que o fato se tornou conhecido. V - nos crimes contra a dignidade sexual ou que envolvam violência contra a criança e o adolescente, previstos neste Código ou em legislação especial, da data em que a vítima completar 18 (dezoito) anos, salvo se a esse tempo já houver sido proposta a ação penal.")
+
     dicionario_final['data_fato'] = data_fato
 
     legislacao = st.radio('Legislação', ['Código Penal', 'Lei Maria da Penha',
@@ -35,28 +37,28 @@ with tab2:
 
         crimes = [crime for crime in dicionario_legislacao.codigo_penal.keys()]
         crimes_ordenados = sorted(crimes)
-        tipo_penal = st.selectbox('Código ', crimes_ordenados)
+        tipo_penal = st.selectbox('Tipo Penal', crimes_ordenados)
         dicionario_final['crime'] = tipo_penal
 
     elif legislacao == 'Lei Maria da Penha':
         crimes = [crime for crime in dicionario_legislacao.maria_da_penha.keys()]
-        tipo_penal = st.selectbox('Crime', crimes)
+        tipo_penal = st.selectbox('Tipo Penal', crimes)
         dicionario_final['crime'] = tipo_penal
 
     elif legislacao == 'Lei 11.343/06 - Lei de Drogas':
         crimes = [crime for crime in dicionario_legislacao.trafico.keys()]
-        tipo_penal = st.selectbox('Crime', crimes)
+        tipo_penal = st.selectbox('Tipo Penal', crimes)
         dicionario_final['crime'] = tipo_penal
 
 
     elif legislacao == 'Lei 10.826/03 - Estatuto do Desarmamento':
         crimes = [crime for crime in dicionario_legislacao.estatuto_desarmamento.keys()]
-        tipo_penal = st.selectbox('Crime', crimes)
+        tipo_penal = st.selectbox('Tipo Penal', crimes)
         dicionario_final['crime'] = tipo_penal
 
     elif legislacao == 'Decreto_Lei nº 3.688 - Lei das Contravenções Penais':
         crimes = [crime for crime in dicionario_legislacao.lcp.keys()]
-        tipo_penal = st.selectbox('Crime', crimes)
+        tipo_penal = st.selectbox('Tipo Penal', crimes)
         dicionario_final['crime'] = tipo_penal
 
     recebimento_denuncia = st.checkbox('Recebimento da Denúncia')
@@ -65,8 +67,8 @@ with tab2:
     if recebimento_denuncia:
         data_minima = datetime.today() - timedelta(days=30 * 365)
 
-        dt_denuncia = st.date_input('Data do recebimento da Denúncia', format="DD/MM/YYYY", min_value=data_minima)
-        dicionario_final['Dt_Denuncia'] = dt_denuncia
+        dt_denuncia = st.date_input('Data do recebimento da Denúncia', format="DD/MM/YYYY", min_value=data_minima,
+                                    help='CP. Art. 117 - O curso da prescrição interrompe-se: I - pelo recebimento da denúncia ou da queixa;')
 
     suspensao_prescricao = st.checkbox('Suspensão da Prescrição')
     dicionario_final['suspensao_prescricao_bool'] = suspensao_prescricao
@@ -90,21 +92,22 @@ with tab2:
         data_minima = datetime.today() - timedelta(days=100 * 365)
 
         # Agora você pode usar 'data_minima' como o valor de 'min_value'
-        idade_autor = st.date_input('Data de nascimento do Autor', value=None, format="DD/MM/YYYY",
-                                    min_value=data_minima)
+        idade_autor = st.date_input('Data de nascimento do Autor do fato', value=None, format="DD/MM/YYYY",
+                                    min_value=data_minima,
+                                    help='Art. 115 - São reduzidos de metade os prazos de prescrição quando o criminoso era, '
+                                         'ao tempo do crime, menor de 21 (vinte e um) anos, ou, na data da sentença, '
+                                         'maior de 70 (setenta) anos.')
 
         dicionario_final['idade_autor'] = idade_autor
         dicionario_final['verificacao_idade']: True
 
     if st.button('Calcular'):
 
-
-
-
         if dicionario_final['suspensao_prescricao_bool']:
 
             if dicionario_final['Dt_inicio_suspensao'] > dicionario_final['Dt_fim_suspensao']:
                 st.error('Data do início da suspensão não pode ser posterior à Data do fim da suspensão', icon="🚫")
+
 
             if dicionario_final.get('Dt_Denuncia', False):
                 if dicionario_final['Dt_inicio_suspensao'] < dicionario_final['Dt_Denuncia']:
@@ -152,8 +155,6 @@ with tab2:
         # faz uma copia do dicionario para o novo dicionario
         dic_dados_informados = copy.deepcopy(dicionario_final)
 
-
-
         # pega idade do autor informada, para calcular idade do autor em outro campo do streamlit
         dt_nascimento_autor = dic_dados_informados.get('idade_autor', None)
         dt_fato = dic_dados_informados.get('data_fato', None)
@@ -167,27 +168,14 @@ with tab2:
         # inicia campo dados calculados
         st.header('Dados calculados')
 
-        #pega prescricao legal do crime, antes do dict original ser alterado
+        # pega prescricao legal do crime, antes do dict original ser alterado
         prescricao_legal = utilidades.dic_prescricao[tipo_penal]
 
         # pega resultado e parecer gerado pela funcao analisa prescricao
         dic_resultado, parecer = utilidades.analisa_prescricao(dicionario_final, processo, reu)
 
-        #adiciona prescriçao legal in abstracto no dicionário
+        # adiciona prescriçao legal in abstracto no dicionário
         dic_resultado['Prescrição Legal in abstracto'] = prescricao_legal
-
-
-
-
-
-
-
-
-
-
-
-
-
 
         # adiciona data de nascimento e calculo da idade do autor no dic
         if dt_nascimento_autor:
