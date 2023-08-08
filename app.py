@@ -335,8 +335,13 @@ with tab3:
         dt_denuncia_x_dt_sentenca = dicionario_retroativa[
             'Decurso do prazo entre a data do recebimento da denuncia e a data da sentença']
 
+        #converte date objetc in string
         dic_novo = {key: (valor.strftime('%d/%m/%Y') if isinstance(valor, date) else valor) for key, valor in
                     dicionario_retroativa.items()}
+
+        # converte True e False in Sim e Não
+        dic_novo = {key: ("Sim" if valor is True else ("Não" if valor is False else valor)) for key, valor in
+                    dic_novo.items()}
 
         st.table(utilidades.converte_dic_dataframe_vertical(dic_novo))
 
