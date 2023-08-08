@@ -182,6 +182,38 @@ def calcula_data_prescricao(data_do_fato, tempo_prescricao_crime, reduz_metade=1
 #     return diferenca_em_dias
 
 
+def calcula_tempo_prescricao_retroativa(tupla):
+    anos = tupla[0]
+    meses = tupla[1]
+
+    if anos == 0 and meses == 0:
+        return 0
+    elif meses == 0:
+        tempo = anos
+    elif meses > 0 and anos > 0:
+        tempo = anos +1
+
+    if tempo < 1:
+        return 3
+
+    elif tempo <= 2:
+        return 4
+
+    elif tempo <=4:
+        return 8
+
+    elif tempo <= 8:
+        return 12
+
+    elif tempo <= 12:
+        return 16
+
+    elif tempo > 12:
+        return 20
+
+
+
+
 def corrige_ordem_da_data_str(data) -> str:
     """
     Corrige o formato de uma string ou objeto datetime.date para ficar na data brasileira
@@ -224,6 +256,7 @@ def analisa_prescricao(dicionario: dict, processo: str = None, reu: str = None):
 
     resultado = {}
     reducao_da_prescricao_metade = 1
+
 
     if dicionario['verificacao_idade'] == True:
 
@@ -572,6 +605,10 @@ def analisa_prescricao(dicionario: dict, processo: str = None, reu: str = None):
                 return resultado, parecer
 
 
+
+
+
+
 def converte_dic_dataframe_vertical(dicionario_final: dict):
     # convert o dicionario para um DataFrame
     df = pd.DataFrame([dicionario_final])
@@ -615,6 +652,10 @@ def normaliza_key_dic_dados_informados(dicionario_corrigir: dict) -> dict:
 
     if 'idade_autor' in dicionario_corrigir:
         dicionario_normalizado['Data de nascimento do autor do fato'] = dicionario_corrigir.pop('idade_autor')
+
+    if 'Pena in concreto' in dicionario_corrigir:
+        pena_in_concreto = dicionario_corrigir['Pena in concreto']
+        dicionario_normalizado['Pena in concreto'] = f"{pena_in_concreto[0]} ano(s) e {pena_in_concreto[1]} mês(es)"
 
     return dicionario_normalizado
 

@@ -135,3 +135,5 @@ lcp = {"Vias de fato - Art. 21": 3,
        "Jogo de azar - Art. 50": 4,
        "Jogo de azar majorado - Art. 50, §1º": 4,
        "Jogo do bixo - Art. 58": 4, }
+
+
