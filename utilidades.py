@@ -1,11 +1,11 @@
-from datetime import datetime, date
+from datetime import datetime, date, timedelta
 import pandas as pd
 import dicionario_legislacao
 from dateutil.relativedelta import relativedelta
 
 dic_prescricao = {**dicionario_legislacao.codigo_penal, **dicionario_legislacao.maria_da_penha,
                   **dicionario_legislacao.trafico, **dicionario_legislacao.estatuto_desarmamento,
-                  **dicionario_legislacao.lcp,  **dicionario_legislacao.ctb}
+                  **dicionario_legislacao.lcp,  **dicionario_legislacao.ctb, **dicionario_legislacao.ambiental}
 
 
 #
@@ -58,6 +58,10 @@ def calcula_diferenca_entre_data_ate_atual(data: date) -> int:
     # calcula a diferenca entre a data do fato e a data atual
     diferenca_dt_fato_x_dt_atual = (data_atual - data_fato)
 
+    print('aqui aqui ')
+    print(diferenca_dt_fato_x_dt_atual)
+    print('='*50)
+
     # converte em anos e dias a diferenca
     anos, dias_restantes = divmod(diferenca_dt_fato_x_dt_atual.days, 365)
 
@@ -85,6 +89,26 @@ def calcula_diferenca_entre_data_ate_atual_em_dias(data: datetime) -> int:
     diferenca_dt_fato_x_dt_atual_dias = (data_atual - data_fato).days
 
     return diferenca_dt_fato_x_dt_atual_dias
+
+
+def calcula_diferenca_entre_duas_datas_em_anos_meses_dias(data_preterita: datetime, data_posterior: date, tempo_suspensao_dias=0):
+
+    # Calcula a diferença entre a data do fato e a data atual
+    diferenca_total = (data_posterior - data_preterita)
+
+    if tempo_suspensao_dias != 0:
+        diferenca_total = diferenca_total - tempo_suspensao_dias
+
+
+    # Considerando que um ano tem 365.25 dias (contabilizando anos bissextos) e um mês tem 30.44 dias em média
+    anos = diferenca_total.days // 365.25
+    meses_restantes = (diferenca_total.days % 365.25) // 30.44
+    dias_restantes = diferenca_total.days - (anos * 365.25 + meses_restantes * 30.44)
+
+
+
+
+    return f' {int(anos)} ano(s),  {int(meses_restantes)} mê(ses) e {int(dias_restantes)} dia(s)'
 
 
 def calcula_diferenca_entre_duas_datas(data_antiga: date, data_nova: date) -> int:
