@@ -32,7 +32,8 @@ with tab2:
     legislacao = st.radio('Legislação', ['Código Penal', 'Lei Maria da Penha',
                                          'Lei 11.343/06 - Lei de Drogas',
                                          'Lei 10.826/03 - Estatuto do Desarmamento',
-                                         "Decreto_Lei nº 3.688 - Lei das Contravenções Penais"])
+                                         "Decreto_Lei nº 3.688 - Lei das Contravenções Penais",
+                                         "Lei 9.503/97 - Código de Trânsito Brasileiro"])
 
     if legislacao == 'Código Penal':
 
@@ -61,6 +62,13 @@ with tab2:
         crimes = [crime for crime in dicionario_legislacao.lcp.keys()]
         tipo_penal = st.selectbox('Tipo Penal', crimes)
         dicionario_final['crime'] = tipo_penal
+
+    elif legislacao == 'Lei 9.503/97 - Código de Trânsito Brasileiro':
+        crimes = [crime for crime in dicionario_legislacao.ctb.keys()]
+        tipo_penal = st.selectbox('Tipo Penal', crimes)
+        dicionario_final['crime'] = tipo_penal
+
+
 
     recebimento_denuncia = st.checkbox('Recebimento da Denúncia')
     dicionario_final['recebimento_denuncia_bool'] = recebimento_denuncia

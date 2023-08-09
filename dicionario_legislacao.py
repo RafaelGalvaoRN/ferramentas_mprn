@@ -1,3 +1,19 @@
+def calcula_prazo_prescriocional(tempo):
+    if tempo < 1:
+        return 3
+    elif tempo <= 2:
+        return 4
+    elif tempo <=4:
+        return 8
+    elif tempo <= 8:
+        return 12
+    elif tempo <= 12:
+        return 16
+    elif tempo > 12:
+        return 20
+
+
+
 codigo_penal = {'Ameaça': 3, 'Infanticídio': 12, "Lesão Corporal - Art 129": 4,
                 "Lesão Grave - Art 129, §1": 12, "Lesão Gravíssima - Art 129, §2": 12,
                 "Lesão Corporal seguida de morte - Art 129, §3": 16,
@@ -137,3 +153,11 @@ lcp = {"Vias de fato - Art. 21": 3,
        "Jogo do bixo - Art. 58": 4, }
 
 
+ctb_penas = {"Art. 302": 4, "Art. 302, §1": 6, "Art. 302, §3": 8,
+       "Art 303": 2, "Art. 303, §1º": 3, "Art. 303, §2º": 5, "Art. 304": 1,
+       "Art. 305": 1, "Art. 306": 3, "Art. 307": 1, "Art. 308": 3, "Art. 308, §1º": 6,
+       "Art. 308, §2": 10, "Art. 309": 1, "Art. 310": 1, "Art. 311": 1, "Art. 312": 1}
+
+
+
+ctb  = {key: calcula_prazo_prescriocional(valor) for key, valor in ctb_penas.items()}

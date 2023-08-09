@@ -5,7 +5,7 @@ from dateutil.relativedelta import relativedelta
 
 dic_prescricao = {**dicionario_legislacao.codigo_penal, **dicionario_legislacao.maria_da_penha,
                   **dicionario_legislacao.trafico, **dicionario_legislacao.estatuto_desarmamento,
-                  **dicionario_legislacao.lcp}
+                  **dicionario_legislacao.lcp,  **dicionario_legislacao.ctb}
 
 
 #
