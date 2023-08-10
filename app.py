@@ -178,20 +178,23 @@ with tab2:
                 prosseguir = False
 
         if prosseguir:
-            # inicia campo dados informados
-            st.header('Dados informados')
-            # faz uma copia do dicionario para o novo dicionario
-            dic_dados_informados = copy.deepcopy(dicionario_final)
 
-            # pega idade do autor informada, para calcular idade do autor em outro campo do streamlit
-            dt_nascimento_autor = dic_dados_informados.get('idade_autor', None)
-            dt_fato = dic_dados_informados.get('data_fato', None)
-            # corrige keys
-            dic_dados_informados = utilidades.normaliza_key_dic_dados_informados(dic_dados_informados)
-            # corrige values
-            dic_dados_informados = utilidades.normaliza_value_dic_dados_informados(dic_dados_informados)
-            # imprime tabela
-            st.table(utilidades.converte_dic_dataframe_vertical(dic_dados_informados))
+            with st.expander("Dados informados"):
+
+                # inicia campo dados informados
+                st.header('Dados informados')
+                # faz uma copia do dicionario para o novo dicionario
+                dic_dados_informados = copy.deepcopy(dicionario_final)
+
+                # pega idade do autor informada, para calcular idade do autor em outro campo do streamlit
+                dt_nascimento_autor = dic_dados_informados.get('idade_autor', None)
+                dt_fato = dic_dados_informados.get('data_fato', None)
+                # corrige keys
+                dic_dados_informados = utilidades.normaliza_key_dic_dados_informados(dic_dados_informados)
+                # corrige values
+                dic_dados_informados = utilidades.normaliza_value_dic_dados_informados(dic_dados_informados)
+                # imprime tabela
+                st.table(utilidades.converte_dic_dataframe_vertical(dic_dados_informados))
 
             # inicia campo dados calculados
             st.header('Dados calculados')
@@ -221,8 +224,17 @@ with tab2:
 
             st.table(utilidades.converte_dic_dataframe_vertical(dic_dados_informados))
 
-            st.header('Parecer')
-            st.write(parecer)
+
+            if dic_dados_informados['Crime prescreveu?'] == 'Não':
+                st.success("NÃO PRESCREVEU", icon="✅")
+            elif dic_dados_informados['Crime prescreveu?'] == 'Sim':
+                st.error("PRESCREVEU", icon="🚫")
+
+
+
+            with st.expander('Parecer'):
+                st.header('Parecer')
+                st.write(parecer)
 
 with tab3:
     st.title("Calculadora de Prescrição Retroativa")
@@ -391,8 +403,10 @@ with tab3:
             dic_novo = {key: ("Sim" if valor is True else ("Não" if valor is False else valor)) for key, valor in
                         dic_novo.items()}
 
-            with st.expander("Dados e Cálculos"):
-                st.table(utilidades.converte_dic_dataframe_vertical(dic_novo))
+            # with st.expander("Dados e Cálculos"):
+            #     st.table(utilidades.converte_dic_dataframe_vertical(dic_novo))
+
+            st.table(utilidades.converte_dic_dataframe_vertical(dic_novo))
 
             prescreveu = False
 
