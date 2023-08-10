@@ -323,67 +323,90 @@ with tab3:
             dt_nascimento_autor_retroativa, dt_sentenca)
 
     if st.button('Calcular', key='buttao_calcular_retroativa'):
-        print(dicionario_retroativa)
+        continuar = True
 
-        prescricao_in_concreto = utilidades.calcula_tempo_prescricao_retroativa(
-            dicionario_retroativa['Pena in concreto (anos, meses)'])
-        dicionario_retroativa['Prazo Prescrição Retroativa decorrente da Pena in concreto'] = prescricao_in_concreto
+        if data_fato_retroativa > dt_denuncia_retroativa:
+            st.error("Data de recebimento da denúncia não pode ser inferior a data do fato")
+            continuar = False
 
-        dicionario_retroativa[
-            'Decurso do prazo entre a data do fato e a data atual'] = utilidades.calcula_diferenca_entre_duas_datas_em_anos_meses_dias(
-            data_fato_retroativa, date.today())
+        if data_fato_retroativa > dt_sentenca:
+            st.error("Data do fato não pode ser posterior a data do fato")
+            continuar = False
 
-        dt_fato_x_dt_atual = utilidades.calcula_diferenca_entre_data_ate_atual(
-            data_fato_retroativa)
-
-        dicionario_retroativa[
-            'Decurso do prazo entre a data fato e data do recebimento da denuncia'] = utilidades.calcula_diferenca_entre_duas_datas_em_anos_meses_dias(
-            data_fato_retroativa, dt_denuncia_retroativa)
-
-        dt_fato_x_dt_denuncia = utilidades.calcula_diferenca_entre_duas_datas(
-            data_fato_retroativa,
-            dt_denuncia_retroativa)
-
-        dt_denuncia_x_dt_sentenca = utilidades.calcula_diferenca_entre_duas_datas(
-            dt_denuncia_retroativa, dt_sentenca)
-
-        print(tempo_suspensao_dias)
-        print(type(tempo_suspensao_dias))
-        dicionario_retroativa[
-            'Decurso do prazo entre a data do recebimento da denuncia e a data da sentença sem suspensão'] = utilidades.calcula_diferenca_entre_duas_datas_em_anos_meses_dias(
-            dt_denuncia_retroativa, dt_sentenca)
+        if dt_denuncia_retroativa > dt_sentenca:
+            st.error("Data de recebimento da denúncia  não pode ser inferior a data do fato")
+            continuar = False
 
         if suspensao_prescricao:
+            if dt_inicio_suspensao_retroativa > dt_fim_suspensao_retroativa:
+                st.error("Data de início da suspensão não pode ser posterior à data final da suspensão da prescrição")
+                continuar = False
+
+
+
+
+
+
+
+
+
+        if continuar:
+            prescricao_in_concreto = utilidades.calcula_tempo_prescricao_retroativa(
+                dicionario_retroativa['Pena in concreto (anos, meses)'])
+
+            dicionario_retroativa['Prazo Prescrição Retroativa decorrente da Pena in concreto'] = prescricao_in_concreto
+
             dicionario_retroativa[
-                'Decurso do prazo entre a data do recebimento da denuncia e a data da sentença com suspensão'] = utilidades.calcula_diferenca_entre_duas_datas_em_anos_meses_dias(
-                dt_denuncia_retroativa, dt_sentenca, tempo_suspensao_dias)
+                'Decurso do prazo entre a data do fato e a data atual'] = utilidades.calcula_diferenca_entre_duas_datas_em_anos_meses_dias(
+                data_fato_retroativa, date.today())
 
+            dt_fato_x_dt_atual = utilidades.calcula_diferenca_entre_data_ate_atual(
+                data_fato_retroativa)
 
+            dicionario_retroativa[
+                'Decurso do prazo entre a data fato e data do recebimento da denuncia'] = utilidades.calcula_diferenca_entre_duas_datas_em_anos_meses_dias(
+                data_fato_retroativa, dt_denuncia_retroativa)
 
-        # converte date objetc in string
-        dic_novo = {key: (valor.strftime('%d/%m/%Y') if isinstance(valor, date) else valor) for key, valor in
-                    dicionario_retroativa.items()}
+            dt_fato_x_dt_denuncia = utilidades.calcula_diferenca_entre_duas_datas(
+                data_fato_retroativa,
+                dt_denuncia_retroativa)
 
-        # converte True e False in Sim e Não
-        dic_novo = {key: ("Sim" if valor is True else ("Não" if valor is False else valor)) for key, valor in
-                    dic_novo.items()}
+            dt_denuncia_x_dt_sentenca = utilidades.calcula_diferenca_entre_duas_datas(
+                dt_denuncia_retroativa, dt_sentenca)
 
-        with st.expander("Dados e Cálculos"):
-            st.table(utilidades.converte_dic_dataframe_vertical(dic_novo))
+            dicionario_retroativa[
+                'Decurso do prazo entre a data do recebimento da denuncia e a data da sentença sem suspensão'] = utilidades.calcula_diferenca_entre_duas_datas_em_anos_meses_dias(
+                dt_denuncia_retroativa, dt_sentenca)
 
-        prescreveu = False
+            if suspensao_prescricao:
+                dicionario_retroativa[
+                    'Decurso do prazo entre a data do recebimento da denuncia e a data da sentença com suspensão'] = utilidades.calcula_diferenca_entre_duas_datas_em_anos_meses_dias(
+                    dt_denuncia_retroativa, dt_sentenca, tempo_suspensao_dias)
 
-        if dt_fato_x_dt_atual >= prescricao_in_concreto:
-            st.error("PRESCREVEU ENTRE A DATA DO FATO E A DATA ATUAL")
-            prescreveu = True
+            # converte date objetc in string
+            dic_novo = {key: (valor.strftime('%d/%m/%Y') if isinstance(valor, date) else valor) for key, valor in
+                        dicionario_retroativa.items()}
 
-        if dt_fato_x_dt_denuncia >= prescricao_in_concreto:
-            st.error("PRESCREVEU ENTRE A DATA DO FATO E A DATA DE RECEBIMENTO DA DENÚNCIA")
-            prescreveu = True
+            # converte True e False in Sim e Não
+            dic_novo = {key: ("Sim" if valor is True else ("Não" if valor is False else valor)) for key, valor in
+                        dic_novo.items()}
 
-        if dt_denuncia_x_dt_sentenca >= prescricao_in_concreto:
-            st.error("PRESCREVEU ENTRE A DATA DE RECEBIMENTO DA DENÚNCIA E A DATA DA SENTENÇA")
-            prescreveu = True
+            with st.expander("Dados e Cálculos"):
+                st.table(utilidades.converte_dic_dataframe_vertical(dic_novo))
 
-        if not prescreveu:
-            st.success("NÃO PRESCREVEU", icon="✅")
+            prescreveu = False
+
+            if dt_fato_x_dt_atual >= prescricao_in_concreto:
+                st.error("PRESCREVEU ENTRE A DATA DO FATO E A DATA ATUAL")
+                prescreveu = True
+
+            if dt_fato_x_dt_denuncia >= prescricao_in_concreto:
+                st.error("PRESCREVEU ENTRE A DATA DO FATO E A DATA DE RECEBIMENTO DA DENÚNCIA")
+                prescreveu = True
+
+            if dt_denuncia_x_dt_sentenca >= prescricao_in_concreto:
+                st.error("PRESCREVEU ENTRE A DATA DE RECEBIMENTO DA DENÚNCIA E A DATA DA SENTENÇA")
+                prescreveu = True
+
+            if not prescreveu:
+                st.success("NÃO PRESCREVEU", icon="✅")

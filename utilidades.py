@@ -58,9 +58,8 @@ def calcula_diferenca_entre_data_ate_atual(data: date) -> int:
     # calcula a diferenca entre a data do fato e a data atual
     diferenca_dt_fato_x_dt_atual = (data_atual - data_fato)
 
-    print('aqui aqui ')
-    print(diferenca_dt_fato_x_dt_atual)
-    print('='*50)
+
+
 
     # converte em anos e dias a diferenca
     anos, dias_restantes = divmod(diferenca_dt_fato_x_dt_atual.days, 365)
@@ -126,6 +125,7 @@ def calcula_diferenca_entre_duas_datas(data_antiga: date, data_nova: date) -> in
         return anos + 1
 
     return anos
+
 
 
 def converte_dias_para_anos_mais_um(tempo: int) -> int:
@@ -210,12 +210,17 @@ def calcula_tempo_prescricao_retroativa(tupla):
     anos = tupla[0]
     meses = tupla[1]
 
+    print(tupla)
+
     if anos == 0 and meses == 0:
         return 0
-    elif meses == 0:
+    elif anos > 0 and meses == 0:
         tempo = anos
     elif meses > 0 and anos > 0:
         tempo = anos +1
+
+    elif meses > 0 and anos ==0:
+        tempo = 0.5
 
     if tempo < 1:
         return 3
@@ -290,8 +295,8 @@ def analisa_prescricao(dicionario: dict, processo: str = None, reu: str = None):
             reducao_da_prescricao_metade = 1 / 2
 
             crime_analisado = dicionario['crime']
-            print(crime_analisado)
-            print('='*50)
+
+
             dic_prescricao[crime_analisado] = dic_prescricao[crime_analisado] * reducao_da_prescricao_metade
 
             resultado['Redução da Prescrição pela metade?'] = True
