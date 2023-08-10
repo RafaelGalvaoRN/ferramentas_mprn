@@ -1,11 +1,9 @@
 def calcula_prazo_prescriocional(tempo):
-
-
     if tempo < 1:
         return 3
     elif tempo <= 2:
         return 4
-    elif tempo <=4:
+    elif tempo <= 4:
         return 8
     elif tempo <= 8:
         return 12
@@ -13,7 +11,6 @@ def calcula_prazo_prescriocional(tempo):
         return 16
     elif tempo > 12:
         return 20
-
 
 
 codigo_penal = {'Ameaça': 3, 'Infanticídio': 12, "Lesão Corporal - Art 129": 4,
@@ -154,14 +151,12 @@ lcp = {"Vias de fato - Art. 21": 3,
        "Jogo de azar majorado - Art. 50, §1º": 4,
        "Jogo do bixo - Art. 58": 4, }
 
-
 ctb_penas = {"Art. 302": 4, "Art. 302, §1": 6, "Art. 302, §3": 8,
-       "Art 303": 2, "Art. 303, §1º": 3, "Art. 303, §2º": 5, "Art. 304": 1,
-       "Art. 305": 1, "Art. 306": 3, "Art. 307": 1, "Art. 308": 3, "Art. 308, §1º": 6,
-       "Art. 308, §2": 10, "Art. 309": 1, "Art. 310": 1, "Art. 311": 1, "Art. 312": 1}
+             "Art 303": 2, "Art. 303, §1º": 3, "Art. 303, §2º": 5, "Art. 304": 1,
+             "Art. 305": 1, "Art. 306": 3, "Art. 307": 1, "Art. 308": 3, "Art. 308, §1º": 6,
+             "Art. 308, §2": 10, "Art. 309": 1, "Art. 310": 1, "Art. 311": 1, "Art. 312": 1}
 
-
-ambiental_penas = data = {
+crimesambientais = {
     'Art. 29': 1,
     'Art. 29, §1º': 1,
     'Art. 29, §4°': 1.5,
@@ -209,7 +204,7 @@ ambiental_penas = data = {
     'Art. 49': 1,
     'Art. 49 c/c art. 53': 1.4,
     'Art. 50': 1,
-    'Art. 50 c/c 53': 1.4,
+    'Art. 50 c/c art. 53': 1.4,
     'Art. 50-A': 4,
     'Art. 50-A c/c 53': 5.4,
     'Art. 51': 1,
@@ -217,18 +212,44 @@ ambiental_penas = data = {
     'Art. 52': 1,
     'Art. 52 c/c art. 53': 1.4,
     'Art. 54': 4,
+    'Art. 54 c/c art. 58, I': 5.4,
+    'Art. 54 c/c art. 58, II': 6,
+    'Art. 54 c/c art. 58, III': 8,
     'Art. 54, § 1º': 1,
     'Art. 54, § 2º': 5,
+    'Art. 54, § 2º c/c art. 58, I': 6.8,
+    'Art. 54, § 2º c/c art. 58, II': 7.5,
+    'Art. 54, § 2º c/c art. 58,III': 10,
     'Art. 54, § 3º': 5,
+    'Art. 54, § 3º c/c art. 58,I': 6.8,
+    'Art. 54, § 3º c/c art. 58, II': 7.5,
+    'Art. 54, §3º c/c art. 58, III': 10,
     'Art. 55': 1,
+    'Art. 55 c/c art. 58, I': 1.4,
+    'Art. 55 c/c art. 58, II': 1.6,
+    'Art. 55 c/c art. 58, III': 2,
     'Art. 55, § único': 1,
+    'Art. 55, § único c/c art. 58, I': 1.4,
+    'Art. 55, § único c/c art. 58, II': 1.6,
+    'Art. 55, § único c/c art. 58, III': 2,
     'Art. 56': 4,
+    'Art. 56, c/c art. 58, I': 5.4,
+    'Art. 56 c/c art. 58, II': 6,
+    'Art. 56 c/c art. 58, III': 8,
     'Art. 56, § 1º': 4,
+    'Art. 56, §1º c/c art. 58, I': 5.4,
+    'Art. 56, §1º c/c art. 58, II': 6,
+    'Art. 56, §1º c/c art. 58, III': 8,
     'Art. 56, § 2º': 5.4,
     'Art. 56, § 3º': 1,
-    'Art. 58, I': 1.4,
     'Art. 60': 6,
+    'Art. 60 c/c art. 58, I': 8,
+    'Art. 60 c/c art. 58, II': 9,
+    'Art. 60 c/c art. 58, III': 12,
     'Art. 61': 4,
+    'Art. 61 c/c art. 58, I': 5.4,
+    'Art. 61 c/c art. 58, II': 6,
+    'Art. 61 c/c art. 58, III': 8,
     'Art. 62': 3,
     'Art. 62, § único': 1,
     'Art. 63': 3,
@@ -243,10 +264,9 @@ ambiental_penas = data = {
     'Art. 69': 3,
     'Art. 69-A': 6,
     'Art. 69-A, § 1°': 3,
-    'Art. 69-A, § 2º': 10}
+    'Art. 69-A, § 2º': 10
+}
 
+ctb = {key: calcula_prazo_prescriocional(valor) for key, valor in ctb_penas.items()}
 
-
-ctb  = {key: calcula_prazo_prescriocional(valor) for key, valor in ctb_penas.items()}
-ambiental = {key: calcula_prazo_prescriocional(valor) for key, valor in ambiental_penas.items()}
-
+ambiental = {key: calcula_prazo_prescriocional(valor) for key, valor in crimesambientais.items()}
