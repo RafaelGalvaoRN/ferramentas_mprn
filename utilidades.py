@@ -173,6 +173,20 @@ def calcula_se_e_maior_de_setenta_anos(data_nascimento: date) -> bool:
     return idade_na_data_atual >= 70
 
 
+
+
+def calcula_se_e_maior_de_setenta_anos_na_sentenca(data_nascimento: date, data_sentenca) -> bool:
+    # pega data fato
+
+    # calcula a idade na data atual
+    idade_na_data_sentenca = data_sentenca.year - data_nascimento.year - (
+            (data_sentenca.month, data_sentenca.day) < (data_nascimento.month, data_nascimento.day))
+
+    setenta_anos = 70 * 365
+
+    # verifica se a pessoa tem 70 anos ou mais
+    return idade_na_data_sentenca >= setenta_anos
+
 def calcula_data_prescricao(data_do_fato, tempo_prescricao_crime, reduz_metade=1, periodo_suspenso=0):
     # Convertendo a string da data para um objeto datetime
 

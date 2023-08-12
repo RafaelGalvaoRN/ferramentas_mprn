@@ -359,11 +359,21 @@ with tab3:
             dt_nascimento_autor_retroativa, data_fato_retroativa)
 
         dicionario_retroativa[
-            'Autor é maior de 70 anos na data da sentença?'] = utilidades.calcula_se_e_menor_21_tempo_crime(
-            dt_nascimento_autor_retroativa, data_fato_retroativa)
+            'Autor é maior de 70 anos na sentença?'] = utilidades.calcula_se_e_maior_de_setenta_anos_na_sentenca(
+            dt_nascimento_autor_retroativa, dt_sentenca)
+
 
         dicionario_retroativa['Idade do autor na data da sentença:'] = utilidades.calcular_idade_na_data(
             dt_nascimento_autor_retroativa, dt_sentenca)
+
+
+        dicionario_retroativa[
+            'Autor é maior de 70 anos na presente data?'] = utilidades.calcula_se_e_maior_de_setenta_anos(
+            dt_nascimento_autor_retroativa)
+
+        dicionario_retroativa[
+            'Idade do autor na presente data?'] = utilidades.calcular_idade_na_data(dt_nascimento_autor_retroativa, datetime.today())
+
 
     verificar_data_acordao = st.checkbox('Analisar prescrição entre a data da sentença e a data do Acórdão',
                                          key="verificacao_data_acordao")
