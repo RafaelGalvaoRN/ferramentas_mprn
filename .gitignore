@@ -1,1 +1,23 @@
 # created by virtualenv automatically
+# PyWin32
+Lib/site-packages/PyWin32.chm
+Lib/site-packages/__pycache__/pythoncom.cpython-311.pyc
+Lib/site-packages/adodbapi/
+Lib/site-packages/isapi/
+Lib/site-packages/pythoncom.py
+Lib/site-packages/pythonwin/
+Lib/site-packages/pywin32-*.dist-info/
+Lib/site-packages/pywin32.pth
+Lib/site-packages/pywin32.version.txt
+Lib/site-packages/pywin32_system32/
+Lib/site-packages/win32/
+Lib/site-packages/win32com/
+Lib/site-packages/win32comext/
+Scripts/__pycache__/
+Scripts/pywin32_postinstall.py
+Scripts/pywin32_testall.py
+
+# tqdm
+Lib/site-packages/tqdm-*.dist-info/
+Lib/site-packages/tqdm/
+Scripts/tqdm.exe
