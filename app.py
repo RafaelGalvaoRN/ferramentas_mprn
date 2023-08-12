@@ -311,7 +311,7 @@ with tab3:
     suspensao_prescricao = st.checkbox('Suspensão da Prescrição', key='suspensao_prescricao_retroativa')
     dicionario_retroativa['Suspensão da Prescrição?'] = suspensao_prescricao
 
-    dicionario_retroativa['Período de Suspensão'] = timedelta(days=0)
+    dicionario_retroativa['Período de Suspensão (dias)'] = timedelta(days=0).days
 
     tempo_suspensao_dias = 0
     if suspensao_prescricao:
@@ -331,7 +331,7 @@ with tab3:
         tempo_suspensao_dias = dicionario_retroativa['Data de Fim da Suspensão'] - dicionario_retroativa[
             'Data de Início da Suspensão']
         dicionario_retroativa['Qtd de dias de suspensão do processo'] = tempo_suspensao_dias.days
-        dicionario_retroativa['Período de Suspensão'] = dt_fim_suspensao_retroativa - dt_inicio_suspensao_retroativa
+        dicionario_retroativa['Período de Suspensão (dias)'] = (dt_fim_suspensao_retroativa - dt_inicio_suspensao_retroativa).days
 
     verificacao_idade = st.checkbox('Verificar Idade do Autor', key="verificacao_idade_retroativa")
     dicionario_retroativa['Houve verificação da idade do autor?'] = verificacao_idade
@@ -517,9 +517,10 @@ with tab3:
                 dt_pronuncia_x_dt_sentenca = utilidades.calcula_diferenca_entre_duas_datas(data_pronuncia, dt_sentenca)
 
 
-            dicionario_retroativa[
-                'Decurso do prazo entre a data do recebimento da denúncia e a data da sentença sem suspensão'] = utilidades.calcula_diferenca_entre_duas_datas_em_anos_meses_dias(
-                dt_denuncia_retroativa, dt_sentenca)
+            if not verificar_rito_juri:
+                dicionario_retroativa[
+                    'Decurso do prazo entre a data do recebimento da denúncia e a data da sentença sem suspensão'] = utilidades.calcula_diferenca_entre_duas_datas_em_anos_meses_dias(
+                    dt_denuncia_retroativa, dt_sentenca)
 
             if suspensao_prescricao:
                 dicionario_retroativa[
@@ -553,9 +554,10 @@ with tab3:
                 st.error("PRESCREVEU ENTRE A DATA DO FATO E A DATA DE RECEBIMENTO DA DENÚNCIA", icon="🚫")
                 prescreveu = True
 
-            if dt_denuncia_x_dt_sentenca >= prescricao_in_concreto:
-                st.error("PRESCREVEU ENTRE A DATA DE RECEBIMENTO DA DENÚNCIA E A DATA DA SENTENÇA", icon="🚫")
-                prescreveu = True
+            if not verificar_rito_juri:
+                if dt_denuncia_x_dt_sentenca >= prescricao_in_concreto:
+                    st.error("PRESCREVEU ENTRE A DATA DE RECEBIMENTO DA DENÚNCIA E A DATA DA SENTENÇA", icon="🚫")
+                    prescreveu = True
 
 
             if verificar_rito_juri:
