@@ -5,7 +5,7 @@ from dateutil.relativedelta import relativedelta
 
 dic_prescricao = {**dicionario_legislacao.codigo_penal, **dicionario_legislacao.maria_da_penha,
                   **dicionario_legislacao.trafico, **dicionario_legislacao.estatuto_desarmamento,
-                  **dicionario_legislacao.lcp,  **dicionario_legislacao.ctb, **dicionario_legislacao.ambiental}
+                  **dicionario_legislacao.lcp, **dicionario_legislacao.ctb, **dicionario_legislacao.ambiental}
 
 
 #
@@ -58,9 +58,6 @@ def calcula_diferenca_entre_data_ate_atual(data: date) -> int:
     # calcula a diferenca entre a data do fato e a data atual
     diferenca_dt_fato_x_dt_atual = (data_atual - data_fato)
 
-
-
-
     # converte em anos e dias a diferenca
     anos, dias_restantes = divmod(diferenca_dt_fato_x_dt_atual.days, 365)
 
@@ -90,22 +87,18 @@ def calcula_diferenca_entre_data_ate_atual_em_dias(data: datetime) -> int:
     return diferenca_dt_fato_x_dt_atual_dias
 
 
-def calcula_diferenca_entre_duas_datas_em_anos_meses_dias(data_preterita: datetime, data_posterior: date, tempo_suspensao_dias=0):
-
+def calcula_diferenca_entre_duas_datas_em_anos_meses_dias(data_preterita: datetime, data_posterior: date,
+                                                          tempo_suspensao_dias=0):
     # Calcula a diferença entre a data do fato e a data atual
     diferenca_total = (data_posterior - data_preterita)
 
     if tempo_suspensao_dias != 0:
         diferenca_total = diferenca_total - tempo_suspensao_dias
 
-
     # Considerando que um ano tem 365.25 dias (contabilizando anos bissextos) e um mês tem 30.44 dias em média
     anos = diferenca_total.days // 365.25
     meses_restantes = (diferenca_total.days % 365.25) // 30.44
     dias_restantes = diferenca_total.days - (anos * 365.25 + meses_restantes * 30.44)
-
-
-
 
     return f' {int(anos)} ano(s),  {int(meses_restantes)} mê(ses) e {int(dias_restantes)} dia(s)'
 
@@ -125,7 +118,6 @@ def calcula_diferenca_entre_duas_datas(data_antiga: date, data_nova: date) -> in
         return anos + 1
 
     return anos
-
 
 
 def converte_dias_para_anos_mais_um(tempo: int) -> int:
@@ -174,18 +166,14 @@ def calcula_se_e_maior_de_setenta_anos(data_nascimento: date) -> bool:
 
 
 
-
-def calcula_se_e_maior_de_setenta_anos_na_sentenca(data_nascimento: date, data_sentenca) -> bool:
-    # pega data fato
+def calcula_se_e_maior_de_setenta_anos_na_sentenca(data_nascimento: date, data_sentenca: date) -> bool:
 
     # calcula a idade na data atual
     idade_na_data_sentenca = data_sentenca.year - data_nascimento.year - (
             (data_sentenca.month, data_sentenca.day) < (data_nascimento.month, data_nascimento.day))
 
-    setenta_anos = 70 * 365
+    return idade_na_data_sentenca >= 70
 
-    # verifica se a pessoa tem 70 anos ou mais
-    return idade_na_data_sentenca >= setenta_anos
 
 def calcula_data_prescricao(data_do_fato, tempo_prescricao_crime, reduz_metade=1, periodo_suspenso=0):
     # Convertendo a string da data para um objeto datetime
@@ -205,6 +193,23 @@ def calcula_data_prescricao(data_do_fato, tempo_prescricao_crime, reduz_metade=1
     data_prescricao = data_prescricao.strftime('%d/%m/%Y')
 
     return data_prescricao
+
+
+def calcula_decote_detratacao(pena_definitiva: tuple, tempo_detracao: tuple) -> tuple:
+
+    tempo_meses_pena_definitiva = pena_definitiva[0] * 12 + pena_definitiva[1]
+
+    tempo_meses_detracao = tempo_detracao[0] * 12 + tempo_detracao[1]
+
+    pena_final_meses = tempo_meses_pena_definitiva - tempo_meses_detracao
+
+    anos = pena_final_meses // 12
+
+    meses = pena_final_meses - (anos*12)
+
+    return anos, meses
+
+
 
 
 # def calcula_diferenca_duas_datas_em_dias(data_antiga: str, data_nova: str) -> int:
@@ -231,9 +236,9 @@ def calcula_tempo_prescricao_retroativa(tupla):
     elif anos > 0 and meses == 0:
         tempo = anos
     elif meses > 0 and anos > 0:
-        tempo = anos +1
+        tempo = anos + 1
 
-    elif meses > 0 and anos ==0:
+    elif meses > 0 and anos == 0:
         tempo = 0.5
 
     if tempo < 1:
@@ -242,7 +247,7 @@ def calcula_tempo_prescricao_retroativa(tupla):
     elif tempo <= 2:
         return 4
 
-    elif tempo <=4:
+    elif tempo <= 4:
         return 8
 
     elif tempo <= 8:
@@ -253,8 +258,6 @@ def calcula_tempo_prescricao_retroativa(tupla):
 
     elif tempo > 12:
         return 20
-
-
 
 
 def corrige_ordem_da_data_str(data) -> str:
@@ -300,7 +303,6 @@ def analisa_prescricao(dicionario: dict, processo: str = None, reu: str = None):
     resultado = {}
     reducao_da_prescricao_metade = 1
 
-
     if dicionario['verificacao_idade'] == True:
 
         if calcula_se_e_menor_21_tempo_crime(dicionario['idade_autor'],
@@ -309,7 +311,6 @@ def analisa_prescricao(dicionario: dict, processo: str = None, reu: str = None):
             reducao_da_prescricao_metade = 1 / 2
 
             crime_analisado = dicionario['crime']
-
 
             dic_prescricao[crime_analisado] = dic_prescricao[crime_analisado] * reducao_da_prescricao_metade
 
@@ -437,6 +438,10 @@ def analisa_prescricao(dicionario: dict, processo: str = None, reu: str = None):
                 resultado['Data da prescrição'] = calcula_data_prescricao(dicionario['Dt_Denuncia'],
                                                                           dic_prescricao[crime_analisado],
                                                                           reduz_metade=reducao_da_prescricao_metade)
+
+
+
+
                 return resultado, parecer
 
 
@@ -648,10 +653,6 @@ def analisa_prescricao(dicionario: dict, processo: str = None, reu: str = None):
                 return resultado, parecer
 
 
-
-
-
-
 def converte_dic_dataframe_vertical(dicionario_final: dict):
     # convert o dicionario para um DataFrame
     df = pd.DataFrame([dicionario_final])
@@ -721,10 +722,6 @@ def normaliza_value_dic_dados_informados(dicionario_corrigir: dict) -> dict:
 
 
 def normaliza_key_dic_dados_calculados(dicionario_corrigir: dict) -> dict:
-
-
-
-
     dicionario_normalizado = dicionario_corrigir
 
     if 'prazo_prescricao' in dicionario_corrigir:
@@ -743,17 +740,11 @@ def normaliza_key_dic_dados_calculados(dicionario_corrigir: dict) -> dict:
         dicionario_normalizado['Idade do autor na data do fato (anos)'] = dicionario_corrigir[
             'Idade do autor na data do fato (anos)']
 
-
-
-
     return dicionario_normalizado
 
 
 def normaliza_value_dic_dados_calculados(dicionario_corrigir: dict) -> dict:
     dicionario_normalizado = dicionario_corrigir
-
-
-
 
     for key, valores in dicionario_corrigir.items():
 
@@ -765,6 +756,5 @@ def normaliza_value_dic_dados_calculados(dicionario_corrigir: dict) -> dict:
 
         if valores is False:
             dicionario_normalizado[key] = "Não"
-
 
     return dicionario_normalizado
