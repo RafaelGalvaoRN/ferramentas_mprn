@@ -229,7 +229,7 @@ def calcula_tempo_prescricao_retroativa(tupla):
     anos = tupla[0]
     meses = tupla[1]
 
-    print(tupla)
+
 
     if anos == 0 and meses == 0:
         return 0
