@@ -7,7 +7,6 @@ import copy
 import inspect
 import dicionario_legislacao as dl
 
-
 st.header('Calculadoras')
 tab1, tab2, tab3, tab4 = st.tabs(["Intro", "Prescrição Punitiva",
                                   "Prescrição Retroativa",
@@ -18,7 +17,8 @@ with tab1:
     st.write("""Disponibilizamos ferramentas úteis ao trabalho do Ministério Público na esfera criminal!""")
     st.write("""O objetivo deste espaço é tornar mais eficiente a persecução penal, por meio de 
                 tecnologias que auxliem o trabalho dos membros do Parquet.""")
-    st.write("Objetivando imprimir celeridade aos trabalhos, iniciamos por desenvolver calculadoras de prescrição para análise dos processos penais.")
+    st.write(
+        "Objetivando imprimir celeridade aos trabalhos, iniciamos por desenvolver calculadoras de prescrição para análise dos processos penais.")
     st.write("Sugestões e ajustes podem ser feitas pelo e-mail: rafaelgalvaorn@hotmail.com")
 
 with tab2:
@@ -105,9 +105,10 @@ with tab2:
         dicionario_final['Dt_inicio_suspensao'] = dt_inicio_suspensao
         dicionario_final['Dt_fim_suspensao'] = dt_fim_suspensao
 
-    verificacao_idade = st.checkbox('Verificar Idade do Autor', help='Art. 115 - São reduzidos de metade os prazos de prescrição quando o criminoso era, '
-                                                            'ao tempo do crime, menor de 21 (vinte e um) anos, ou, na data da sentença, '
-                                                            'maior de 70 (setenta) anos.')
+    verificacao_idade = st.checkbox('Verificar Idade do Autor',
+                                    help='Art. 115 - São reduzidos de metade os prazos de prescrição quando o criminoso era, '
+                                         'ao tempo do crime, menor de 21 (vinte e um) anos, ou, na data da sentença, '
+                                         'maior de 70 (setenta) anos.')
     dicionario_final['verificacao_idade'] = verificacao_idade
 
     if verificacao_idade:
@@ -210,12 +211,8 @@ with tab2:
             # pega resultado e parecer gerado pela funcao analisa prescricao
             dic_resultado, parecer = utilidades.analisa_prescricao(dicionario_final, processo, reu)
 
-
-
-
             # adiciona prescriçao legal in abstracto no dicionário
             dic_resultado['Prescrição Legal in abstracto'] = prescricao_legal
-
 
             # adiciona data de nascimento e calculo da idade do autor no dic
             if dt_nascimento_autor:
@@ -336,11 +333,12 @@ with tab3:
             'Data de Início da Suspensão']
         dicionario_retroativa['Qtd de dias de suspensão do processo'] = tempo_suspensao_dias.days
         dicionario_retroativa['Período de Suspensão (dias)'] = (
-                    dt_fim_suspensao_retroativa - dt_inicio_suspensao_retroativa).days
+                dt_fim_suspensao_retroativa - dt_inicio_suspensao_retroativa).days
 
-    verificacao_idade = st.checkbox('Verificar Idade do Autor', key="verificacao_idade_retroativa",   help='Art. 115 - São reduzidos de metade os prazos de prescrição quando o criminoso era, '
-                                                            'ao tempo do crime, menor de 21 (vinte e um) anos, ou, na data da sentença, '
-                                                            'maior de 70 (setenta) anos.')
+    verificacao_idade = st.checkbox('Verificar Idade do Autor', key="verificacao_idade_retroativa",
+                                    help='Art. 115 - São reduzidos de metade os prazos de prescrição quando o criminoso era, '
+                                         'ao tempo do crime, menor de 21 (vinte e um) anos, ou, na data da sentença, '
+                                         'maior de 70 (setenta) anos.')
     dicionario_retroativa['Houve verificação da idade do autor?'] = verificacao_idade
 
     if verificacao_idade:
@@ -352,7 +350,7 @@ with tab3:
                                                        key="idade_autor_retroativa",
                                                        value=None, format="DD/MM/YYYY",
                                                        min_value=data_minima
-                                                     )
+                                                       )
 
         dicionario_retroativa['Data de nascimento do autor'] = dt_nascimento_autor_retroativa
 
@@ -363,14 +361,9 @@ with tab3:
         dicionario_retroativa['Idade do autor na data dos fatos:'] = utilidades.calcular_idade_na_data(
             dt_nascimento_autor_retroativa, data_fato_retroativa)
 
-
-
         dicionario_retroativa[
             'Autor é maior de 70 anos na sentença?'] = utilidades.calcula_se_e_maior_de_setenta_anos_na_sentenca(
             dt_nascimento_autor_retroativa, dt_sentenca)
-
-
-
 
         dicionario_retroativa['Idade do autor na data da sentença:'] = utilidades.calcular_idade_na_data(
             dt_nascimento_autor_retroativa, dt_sentenca)
@@ -486,11 +479,11 @@ with tab3:
 
             if verificacao_idade:
                 if dicionario_retroativa[
-            'Autor é menor de 21 anos na data dos fatos?'] or dicionario_retroativa[
-            'Autor é maior de 70 anos na sentença?']:
-
-                    dicionario_retroativa['Prazo Prescrição Retroativa decorrente da Pena in concreto'] = prescricao_in_concreto * 1/2
-                    prescricao_in_concreto = prescricao_in_concreto * 1/2
+                    'Autor é menor de 21 anos na data dos fatos?'] or dicionario_retroativa[
+                    'Autor é maior de 70 anos na sentença?']:
+                    dicionario_retroativa[
+                        'Prazo Prescrição Retroativa decorrente da Pena in concreto'] = prescricao_in_concreto * 1 / 2
+                    prescricao_in_concreto = prescricao_in_concreto * 1 / 2
 
             dicionario_retroativa[
                 'Decurso do prazo entre a data do fato e a data atual'] = utilidades.calcula_diferenca_entre_duas_datas_em_anos_meses_dias(
@@ -587,6 +580,8 @@ with tab3:
                 st.success("NÃO PRESCREVEU", icon="✅")
 
 with tab4:
+    st.title("Calculadora de Prescrição Executória")
+
     dicionario_executoria = {}
 
     processo = st.text_input(label='Processo', key='processo_executoria', max_chars=30)
@@ -635,22 +630,24 @@ with tab4:
         dicionario_executoria['Prazo prescricional'] = calcula_tempo_prescricao_retroativa(
             dicionario_executoria['Pena in concreto com a detração (anos, meses)'])
 
-
-
     data_minima = datetime.today() - timedelta(days=20 * 365)
 
     # Agora você pode usar 'data_minima' como o valor de 'min_value'
     data_termo_inicial_prescricao = st.date_input('Termo Inicial da Contagem',
-                                 key="termo_inicial_contagem",
-                                 value=None, format="DD/MM/YYYY",
-                                 min_value=data_minima,
-                                 help='O termo inicial da contagem do prazo da prescrição da pretensão executória é o trânsito em julgado para ambas as partes. STJ. 3ª Seção. AgRg no REsp 1.983.259-PR, Rel. Min. Sebastião Reis Júnior, julgado 26/10/2022 (Info 755)')
+                                                  key="termo_inicial_contagem",
+                                                  value=None, format="DD/MM/YYYY",
+                                                  min_value=data_minima,
+                                                  help='O termo inicial da contagem do prazo da prescrição da pretensão executória é o trânsito em julgado para ambas as partes. STJ. 3ª Seção. AgRg no REsp 1.983.259-PR, Rel. Min. Sebastião Reis Júnior, julgado 26/10/2022 (Info 755)')
+
+
+
 
     dicionario_executoria['Termo Inicial da Prescrição'] = data_termo_inicial_prescricao
 
-    verificacao_idade = st.checkbox('Verificar Idade do Autor', key="verificacao_idade_executoria", help='Art. 115 - São reduzidos de metade os prazos de prescrição quando o criminoso era, '
-                                                            'ao tempo do crime, menor de 21 (vinte e um) anos, ou, na data da sentença, '
-                                                            'maior de 70 (setenta) anos.')
+    verificacao_idade = st.checkbox('Verificar Idade do Autor', key="verificacao_idade_executoria",
+                                    help='Art. 115 - São reduzidos de metade os prazos de prescrição quando o criminoso era, '
+                                         'ao tempo do crime, menor de 21 (vinte e um) anos, ou, na data da sentença, '
+                                         'maior de 70 (setenta) anos.')
     dicionario_executoria['Houve verificação da idade do autor?'] = verificacao_idade
 
     if verificacao_idade:
@@ -665,8 +662,9 @@ with tab4:
 
         dicionario_executoria['Data de nascimento do autor'] = dt_nascimento_autor_executoria
 
-        dt_fatos_executoria = st.date_input("Data dos fatos", key="data_fatos_executoria", value=None, format="DD/MM/YYYY",
-                                                       min_value=data_minima,)
+        dt_fatos_executoria = st.date_input("Data dos fatos", key="data_fatos_executoria", value=None,
+                                            format="DD/MM/YYYY",
+                                            min_value=data_minima, )
 
         dicionario_executoria[
             'Autor é menor de 21 anos na data dos fatos?'] = utilidades.calcula_se_e_menor_21_tempo_crime(
@@ -675,10 +673,9 @@ with tab4:
         dicionario_executoria['Idade do autor na data dos fatos:'] = utilidades.calcular_idade_na_data(
             dt_nascimento_autor_executoria, dt_fatos_executoria)
 
-
         dt_sentenca_executoria = st.date_input("Data da sentença", key="data_sentença_executoria", value=None,
-                                            format="DD/MM/YYYY",
-                                            min_value=data_minima, )
+                                               format="DD/MM/YYYY",
+                                               min_value=data_minima, )
 
         dicionario_executoria[
             'Autor é maior de 70 anos na sentença?'] = utilidades.calcula_se_e_maior_de_setenta_anos_na_sentenca(
@@ -694,25 +691,52 @@ with tab4:
         dicionario_executoria[
             'Idade do autor na presente data?'] = utilidades.calcular_idade_na_data(dt_nascimento_autor_executoria,
 
-
                                                                                     datetime.today())
 
-    verificar_reincidencia = st.checkbox('Réu reincidente?', key="verificacao_reincidencia")
+    verificar_reincidencia = st.checkbox('Réu reincidente?', key="verificacao_reincidencia",
+                                         help="Art. 110 - A prescrição depois de transitar em julgado a sentença condenatória regula-se pela pena aplicada e verifica-se nos prazos fixados no artigo anterior, os quais se aumentam de um terço, se o condenado é reincidente.")
     dicionario_retroativa['Réu reincidente?'] = verificar_reincidencia
 
     if verificar_reincidencia:
-        pass
+        prazo_prescricao_com_reincidencia = dicionario_executoria[
+            'Prazo prescricional com reincidência (anos, meses)'] = calcula_aumento_prazo_prescricao_reincidencia(
+            dicionario_executoria['Prazo prescricional'])
+
+        if verificar_reincidencia and verificacao_idade:
+            if dicionario_executoria[
+                'Autor é menor de 21 anos na data dos fatos?'] or dicionario_executoria[
+                'Autor é maior de 70 anos na sentença?']:
+                dicionario_executoria[
+                    'Prazo prescricional com reincidência pela metade em razão da idade do autor (anos, meses)'] = calcula_metade_tempo(
+                    prazo_prescricao_com_reincidencia[0], prazo_prescricao_com_reincidencia[1]
+                    )
 
 
+    # if verificacao_idade and (dicionario_executoria[
+    #                               'Autor é menor de 21 anos na data dos fatos?'] or dicionario_executoria[
+    #                               'Autor é maior de 70 anos na sentença?']) and verificar_reincidencia:
+    #     dicionario_executoria[
+    #         'Prazo prescricional pela metade em razão da idade do autor com acréscimo da reincidência'] = int(
+    #         dicionario_executoria['Prazo Prescricional com reincidencia'] / 2)
+    #
+    #     dicionario_executoria['Prazo prescricional pela metade em razão da idade do autor'] = int(
+    #         dicionario_executoria['Prazo prescricional'] / 2)
 
     if st.button('Calcular', key='buttao_calcular_executoria'):
-
         # converte date objetc in string
-        dic_executoria = {key: (valor.strftime('%d/%m/%Y') if isinstance(valor, date) else valor) for key, valor in
-                    dicionario_executoria.items()}
 
-        # converte True e False in Sim e Não
-        dic_executoria = {key: ("Sim" if valor is True else ("Não" if valor is False else valor)) for key, valor in
-                    dicionario_executoria.items()}
+        dic_executoria = {}
+        for key, valor in dicionario_executoria.items():
+            # Check if it's a date
+            if isinstance(valor, date):
+                dic_executoria[key] = valor.strftime('%d/%m/%Y')
+            # Check if it's a boolean True or False
+            elif valor is True:
+                dic_executoria[key] = "Sim"
+            elif valor is False:
+                dic_executoria[key] = "Não"
+            # Else, just assign the original value
+            else:
+                dic_executoria[key] = valor
 
         st.table(utilidades.converte_dic_dataframe_vertical(dic_executoria))

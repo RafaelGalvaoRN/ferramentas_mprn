@@ -165,9 +165,7 @@ def calcula_se_e_maior_de_setenta_anos(data_nascimento: date) -> bool:
     return idade_na_data_atual >= 70
 
 
-
 def calcula_se_e_maior_de_setenta_anos_na_sentenca(data_nascimento: date, data_sentenca: date) -> bool:
-
     # calcula a idade na data atual
     idade_na_data_sentenca = data_sentenca.year - data_nascimento.year - (
             (data_sentenca.month, data_sentenca.day) < (data_nascimento.month, data_nascimento.day))
@@ -196,7 +194,6 @@ def calcula_data_prescricao(data_do_fato, tempo_prescricao_crime, reduz_metade=1
 
 
 def calcula_decote_detratacao(pena_definitiva: tuple, tempo_detracao: tuple) -> tuple:
-
     tempo_meses_pena_definitiva = pena_definitiva[0] * 12 + pena_definitiva[1]
 
     tempo_meses_detracao = tempo_detracao[0] * 12 + tempo_detracao[1]
@@ -205,12 +202,35 @@ def calcula_decote_detratacao(pena_definitiva: tuple, tempo_detracao: tuple) -> 
 
     anos = pena_final_meses // 12
 
-    meses = pena_final_meses - (anos*12)
+    meses = pena_final_meses - (anos * 12)
 
     return anos, meses
 
 
+def calcula_aumento_prazo_prescricao_reincidencia(prazo_prescricional_anos: int) -> tuple:
+    anos_acrescido_um_terco = prazo_prescricional_anos
 
+    anos_acrescido_um_terco *= 4 / 3
+
+    anos = int(anos_acrescido_um_terco)  # Parte inteira dos anos
+
+    meses = (anos_acrescido_um_terco - anos) * 12  # Converte a parte decimal em meses
+
+    return int(anos), int(round(meses))
+
+
+def calcula_metade_tempo(anos: int, meses: int) -> tuple:
+    # Converte tudo para meses
+    total_meses = anos * 12 + meses
+
+    # Calcula a metade
+    metade_meses = total_meses / 2
+
+    # Converte de volta para anos e meses
+    anos_metade = int(metade_meses // 12)  # Usa a divisão de piso para obter a parte inteira (anos)
+    meses_metade = int(round(metade_meses % 12))  # Usa o módulo para obter a parte restante (meses)
+
+    return anos_metade, meses_metade
 
 # def calcula_diferenca_duas_datas_em_dias(data_antiga: str, data_nova: str) -> int:
 #     # convert data string in dic in datetime object
@@ -228,8 +248,6 @@ def calcula_decote_detratacao(pena_definitiva: tuple, tempo_detracao: tuple) -> 
 def calcula_tempo_prescricao_retroativa(tupla):
     anos = tupla[0]
     meses = tupla[1]
-
-
 
     if anos == 0 and meses == 0:
         return 0
@@ -438,9 +456,6 @@ def analisa_prescricao(dicionario: dict, processo: str = None, reu: str = None):
                 resultado['Data da prescrição'] = calcula_data_prescricao(dicionario['Dt_Denuncia'],
                                                                           dic_prescricao[crime_analisado],
                                                                           reduz_metade=reducao_da_prescricao_metade)
-
-
-
 
                 return resultado, parecer
 
