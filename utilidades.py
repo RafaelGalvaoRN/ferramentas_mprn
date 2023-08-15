@@ -49,6 +49,27 @@ dic_prescricao = {**dicionario_legislacao.codigo_penal, **dicionario_legislacao.
 #
 #                  }
 
+
+def soma_ano_mes_e_calcula_nova_prescricao(ano_mes: tuple, termo_inicial:datetime) -> datetime:
+    ano = ano_mes[0]
+    mes = ano_mes[1]
+
+    nova_data = termo_inicial + relativedelta(years=ano)
+    nova_data = nova_data + relativedelta(months=mes)
+
+
+    return nova_data
+
+
+def soma_ano_calcula_nova_prescricao(ano: int, termo_inicial:datetime) -> datetime:
+
+    nova_data = termo_inicial + relativedelta(years=ano)
+
+
+    return nova_data
+
+
+
 def calcula_diferenca_entre_data_ate_atual(data: date) -> int:
     # convert data string in dic in datetime object
     data_fato = data
