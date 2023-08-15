@@ -741,17 +741,18 @@ with tab4:
             dic_execucao['DATA DE PRESCRIÇÃO FINAL'] = dic_execucao[
                 'Data de prescrição acrescida de reincidência']
 
-    if verificar_reincidencia and (dic_execucao['Autor é menor de 21 anos na data dos fatos?'] or dic_execucao[
-        'Autor é maior de 70 anos na sentença?']):
+    if verificar_reincidencia and verificacao_idade:
+        if dic_execucao['Autor é menor de 21 anos na data dos fatos?'] or dic_execucao[
+        'Autor é maior de 70 anos na sentença?']:
 
-        dic_execucao['Data de prescrição acrescida de reincidência reduzida pela metade em razão da idade do autor'] = soma_ano_mes_e_calcula_nova_prescricao(
-            dic_execucao['Prazo prescricional com reincidência pela metade em razão da idade do autor (anos, meses)'],
-            dic_execucao['Termo Inicial da Prescrição'])
+            dic_execucao['Data de prescrição acrescida de reincidência reduzida pela metade em razão da idade do autor'] = soma_ano_mes_e_calcula_nova_prescricao(
+                dic_execucao['Prazo prescricional com reincidência pela metade em razão da idade do autor (anos, meses)'],
+                dic_execucao['Termo Inicial da Prescrição'])
 
-        if dic_execucao[
-            'Data de prescrição acrescida de reincidência reduzida pela metade em razão da idade do autor'] > dic_execucao['DATA DE PRESCRIÇÃO FINAL']:
-            dic_execucao['DATA DE PRESCRIÇÃO FINAL'] = dic_execucao[
-                'Data de prescrição acrescida de reincidência reduzida pela metade em razão da idade do autor']
+            if dic_execucao[
+                'Data de prescrição acrescida de reincidência reduzida pela metade em razão da idade do autor'] > dic_execucao['DATA DE PRESCRIÇÃO FINAL']:
+                dic_execucao['DATA DE PRESCRIÇÃO FINAL'] = dic_execucao[
+                    'Data de prescrição acrescida de reincidência reduzida pela metade em razão da idade do autor']
 
 
 
