@@ -6,6 +6,7 @@ from datetime import datetime, timedelta, date
 import copy
 import inspect
 import dicionario_legislacao as dl
+from dateutil.relativedelta import relativedelta
 
 
 def calc_prescricao_punitiva():
@@ -250,7 +251,7 @@ def calc_prescricao_punitiva_tributaria():
         crimes = [crime for crime in dicionario_legislacao.tributario.keys()]
         tipo_penal = st.selectbox('Tipo Penal', crimes)
         tributario_consolidado['Tipo Penal'] = tipo_penal
-        tributario_consolidado['Prescrição in abstrato (anos)'] = dl.crimes_tributarios[tipo_penal]
+        tributario_consolidado['Prescrição in abstrato (anos)'] = dl.tributario[tipo_penal]
         tributario_consolidado['Prescrição in abstrato considerando a data do fato'] = soma_ano_calcula_nova_prescricao(
             dl.crimes_tributarios[tipo_penal], data_fato)
 
@@ -273,12 +274,15 @@ def calc_prescricao_punitiva_tributaria():
             tributario_consolidado[f'Data início da Suspensão do parcelamento {i + 1}'] = data_inicio
             tributario_consolidado[f'Data fim da Suspensão do parcelamento {i + 1}'] = data_fim
             tributario_consolidado[f'Quantidade de dias suspensos no parcelamento {i + 1}'] = (
-                        data_fim - data_inicio).days
+                    data_fim - data_inicio).days
             qtd_dias_suspensos_total += tributario_consolidado[f'Quantidade de dias suspensos no parcelamento {i + 1}']
 
             st.markdown("---")
 
-        tributario_consolidado[f'Quantidade total de dias suspensos no parcelamento'] = qtd_dias_suspensos_total
+        tributario_consolidado['Quantidade total de dias suspensos no parcelamento'] = qtd_dias_suspensos_total
+        tributario_consolidado['Data da Perscrição in abstrato considerando os dias de suspensão do parcelamento'] = \
+        tributario_consolidado['Prescrição in abstrato considerando a data do fato'] + relativedelta(
+            days=qtd_dias_suspensos_total)
 
     # funcao que sintetiza parte do código
     dicionario_streamlit = utilidades.streamlit_denuncia_x_suspensao_prescricao_x_verificar_idade(
@@ -286,6 +290,6 @@ def calc_prescricao_punitiva_tributaria():
 
     tributario_consolidado.update(dicionario_streamlit)
 
-    # utilidades.analisa_prescricao_tributaria(tributario_consolidado)
+    utilidades.analisa_prescricao_tributaria(tributario_consolidado)
 
     streamlit_calcular_corrige_dic_imprime_tabela("tributario-widgets", tributario_consolidado)
