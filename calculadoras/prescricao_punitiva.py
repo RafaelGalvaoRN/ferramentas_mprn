@@ -290,6 +290,34 @@ def calc_prescricao_punitiva_tributaria():
 
     tributario_consolidado.update(dicionario_streamlit)
 
-    utilidades.analisa_prescricao_tributaria(tributario_consolidado)
+    tributario_consolidado["Prescrição final"] = get_latest_datetime(tributario_consolidado)
 
-    streamlit_calcular_corrige_dic_imprime_tabela("tributario-widgets", tributario_consolidado)
+    print('oioi')
+    print(tributario_consolidado["Prescrição final"])
+    print(type(tributario_consolidado["Prescrição final"]))
+
+
+    if st.button('Calcular', key="tributario12"):
+
+        if tributario_consolidado["Prescrição final"] > datetime.now().date():
+            st.success('NÃO PRESCREVEU', icon="✅")
+        else:
+            st.error('PRESCREVEU', icon='🚫')
+
+        # converte date objetc in string
+
+        dic_executoria = {}
+        for key, valor in tributario_consolidado.items():
+            # Check if it's a date
+            if isinstance(valor, date):
+                tributario_consolidado[key] = valor.strftime('%d/%m/%Y')
+            # Check if it's a boolean True or False
+            elif valor is True:
+                tributario_consolidado[key] = "Sim"
+            elif valor is False:
+                tributario_consolidado[key] = "Não"
+            # Else, just assign the original value
+            else:
+                tributario_consolidado[key] = valor
+
+        st.table(converte_dic_dataframe_vertical(tributario_consolidado))

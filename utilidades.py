@@ -26,12 +26,8 @@ def streamlit_denuncia_x_suspensao_prescricao_x_verificar_idade(tributario_conso
 
         dic_resultado['Data de recebimento da Denuncia'] = dt_denuncia
 
-
-
         dic_resultado['Data da prescrição considerando o recebimento da denúncia'] = dt_denuncia + relativedelta(
             years=tributario_consolidado['Prescrição in abstrato (anos)'])
-
-
 
     suspensao_prescricao = st.checkbox('Suspensão da Prescrição')
     dic_resultado['Houve suspensão da prescricão pela citação editalícia?'] = suspensao_prescricao
@@ -50,10 +46,11 @@ def streamlit_denuncia_x_suspensao_prescricao_x_verificar_idade(tributario_conso
         dic_resultado['Tempo em dias da suspensão pela citação editalícia'] = (
                 dt_fim_suspensao - dt_inicio_suspensao).days
 
-        dic_resultado[
-            'Data da prescrição considerando o recebimento da denúncia e o período de dias de suspensão pela citação editalícia'] = dt_denuncia + relativedelta(
-            years=tributario_consolidado['Prescrição in abstrato (anos)']) + relativedelta(
-            days=dic_resultado['Tempo em dias da suspensão pela citação editalícia'])
+        if recebimento_denuncia:
+            dic_resultado[
+                'Data da prescrição considerando o recebimento da denúncia e o período de dias de suspensão pela citação editalícia'] = dt_denuncia + relativedelta(
+                years=tributario_consolidado['Prescrição in abstrato (anos)']) + relativedelta(
+                days=dic_resultado['Tempo em dias da suspensão pela citação editalícia'])
 
     verificacao_idade = st.checkbox('Verificar Idade do Autor',
                                     help='Art. 115 - São reduzidos de metade os prazos de prescrição quando o criminoso era, '
@@ -87,23 +84,38 @@ def streamlit_denuncia_x_suspensao_prescricao_x_verificar_idade(tributario_conso
             'Autor é maior de 70 anos?'] = calcula_se_e_maior_de_setenta_anos_na_sentenca(
             dt_nascimento_autor, datetime.today())
 
-        if  dic_resultado[
+        if dic_resultado[
             'Autor é menor de 21 anos na data dos fatos?'] or dic_resultado[
             'Autor é maior de 70 anos?']:
 
-            dic_resultado['Prescrição in abstrato considerando a reduçao pela metade pela idade' ] = novo_prazo_prescricao = int(tributario_consolidado['Prescrição in abstrato (anos)'] /2)
-            dic_resultado['Data da Prescrição in abstrato considerando a reduçao pela metade pela idade e a data do fato'] = tributario_consolidado['Data do fato'] + relativedelta(years=novo_prazo_prescricao)
+            dic_resultado[
+                'Prescrição in abstrato considerando a reduçao pela metade pela idade'] = novo_prazo_prescricao = int(
+                tributario_consolidado['Prescrição in abstrato (anos)'] / 2)
 
-            dic_resultado['Prescrição in abstrato considerando a reduçao pela metade pela idade e os dias de suspensao do parcelamento'] =  tributario_consolidado['Data do fato'] + relativedelta(years=novo_prazo_prescricao) + relativedelta(days=tributario_consolidado['Quantidade total de dias suspensos no parcelamento'] )
-            dic_resultado['Prescrição in abstrato considerando a reduçao pela metade pela idade e o recebimento da denúncia'] = tributario_consolidado['Data de recebimento da Denuncia'] + relativedelta(years=novo_prazo_prescricao)
-            dic_resultado['Prescrição in abstrato considerando a reduçao pela metade pela idade e o recebimento da denúncia e a '] =
+            dic_resultado[
+                'Data da Prescrição in abstrato considerando a reduçao pela metade pela idade e a data do fato'] = \
+                tributario_consolidado['Data do fato'] + relativedelta(years=novo_prazo_prescricao)
 
+            if tributario_consolidado['Houve suspensão pelo parcelamento tributário']:
+                dic_resultado[
+                    'Prescrição in abstrato considerando a reduçao pela metade pela idade e os dias de suspensao do parcelamento'] = \
+                    tributario_consolidado['Data do fato'] + relativedelta(years=novo_prazo_prescricao) + relativedelta(
+                        days=tributario_consolidado['Quantidade total de dias suspensos no parcelamento'])
 
+            if recebimento_denuncia:
+                dic_resultado[
+                    'Prescrição in abstrato considerando a reduçao pela metade pela idade e o recebimento da denúncia'] = \
+                    dic_resultado['Data de recebimento da Denuncia'] + relativedelta(years=novo_prazo_prescricao)
 
+                if suspensao_prescricao:
+                    dic_resultado[
+                        'Prescrição in abstrato considerando a reduçao pela metade pela idade e o recebimento da denúncia e a suspensão da prescrição editalícia'] = \
+                        dic_resultado['Data de recebimento da Denuncia'] + relativedelta(
+                            years=novo_prazo_prescricao) + relativedelta(
+                            days=dic_resultado['Tempo em dias da suspensão pela citação editalícia'])
 
-            # print('aqio aqio')
+                    # print('aqio aqio')
             # dic_resultado['Nova prescrição in abstrato (anos e meses)' ] = tributario_consolidado
-
 
     return dic_resultado
 
@@ -129,6 +141,21 @@ def streamlit_calcular_corrige_dic_imprime_tabela(tributario, dic):
         st.table(converte_dic_dataframe_vertical(dic_executoria))
 
 
+def get_latest_datetime(d):
+    # Filtra todos os valores que são instâncias de datetime
+
+    print('oiosiosiadosiodi')
+    print(d)
+
+    datetimes = [value for value in d.values() if isinstance(value, (date, datetime))]
+
+    print(datetimes)
+    # Retorna o datetime mais recente, se houver algum
+    if datetimes:
+        return max(datetimes)
+
+
+
 def soma_ano_mes_e_calcula_nova_prescricao(ano_mes: tuple, termo_inicial: datetime) -> datetime:
     ano = ano_mes[0]
     mes = ano_mes[1]
@@ -140,20 +167,18 @@ def soma_ano_mes_e_calcula_nova_prescricao(ano_mes: tuple, termo_inicial: dateti
 
 
 def reduz_metade_prescricao_in_abstrato_pela_idade(prescricao: int) -> tuple:
-
     if prescricao == 3:
-        return (1,6)
+        return (1, 6)
     elif prescricao == 4:
-        return (2,0)
+        return (2, 0)
     elif prescricao == 8:
-        return (2,0)
+        return (2, 0)
     elif prescricao == 12:
-        return (6,0)
+        return (6, 0)
     elif prescricao == 16:
-        return (8,0)
+        return (8, 0)
     elif prescricao == 20:
-        return (10,0)
-
+        return (10, 0)
 
 
 def soma_ano_calcula_nova_prescricao(ano: int, termo_inicial: datetime) -> datetime:
@@ -426,8 +451,7 @@ def calcular_idade_na_data(data_de_nascimento, data_do_fato):
     return idade
 
 
-def analisa_prescricao_tributaria(tributario_consolidado: dict) -> bool:
-    pprint.pprint(tributario_consolidado)
+
 
 
 def analisa_prescricao(dicionario: dict, processo: str = None, reu: str = None):

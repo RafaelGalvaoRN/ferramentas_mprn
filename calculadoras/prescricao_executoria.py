@@ -145,8 +145,7 @@ def calc_prescricao_executoria():
     dic_execucao['DATA DE PRESCRIÇÃO FINAL'] = dic_execucao['Data de prescrição']
 
     if verificacao_idade:
-        print('oi oi oi ')
-        print(dic_execucao)
+
         if dic_execucao['Autor é menor de 21 anos na data dos fatos?'] or dic_execucao[
             'Autor é maior de 70 anos na sentença?']:
 
