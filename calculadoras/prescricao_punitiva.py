@@ -10,8 +10,6 @@ from dateutil.relativedelta import relativedelta
 
 
 def calc_prescricao_punitiva():
-    st.title("Calculadora Prescrição")
-
     dicionario_final = {}
 
     processo = st.text_input(label='Processo', max_chars=30)
@@ -229,13 +227,12 @@ def calc_prescricao_punitiva():
 
 
 def calc_prescricao_punitiva_tributaria():
-    st.title("Calculadora Prescrição Punitiva")
-    st.write("Rito Tributário")
-
     tributario_consolidado = {}
 
     processo = st.text_input(label='Processo', max_chars=30, key="tributario")
+    tributario_consolidado['Número do Processo'] = processo
     reu = st.text_input(label='Réu', max_chars=30, key="tributario1")
+    tributario_consolidado['Nome do Contribuinte'] = reu
     data_minima = datetime.today() - timedelta(days=60 * 365)
 
     data_fato = st.date_input(label='Data do Fato', value=None, format="DD/MM/YYYY", min_value=data_minima,
@@ -252,8 +249,8 @@ def calc_prescricao_punitiva_tributaria():
         tipo_penal = st.selectbox('Tipo Penal', crimes)
         tributario_consolidado['Tipo Penal'] = tipo_penal
         tributario_consolidado['Prescrição in abstrato (anos)'] = dl.tributario[tipo_penal]
-        tributario_consolidado['Prescrição in abstrato considerando a data do fato'] = soma_ano_calcula_nova_prescricao(
-            dl.crimes_tributarios[tipo_penal], data_fato)
+        tributario_consolidado['Prescrição in abstrato considerando a data do fato'] = data_fato + relativedelta(
+            years=tributario_consolidado['Prescrição in abstrato (anos)'])
 
     suspensao_parcelamento = st.checkbox("Houve suspensão pelo parcelamento tributário")
     tributario_consolidado['Houve suspensão pelo parcelamento tributário'] = suspensao_parcelamento
@@ -281,8 +278,8 @@ def calc_prescricao_punitiva_tributaria():
 
         tributario_consolidado['Quantidade total de dias suspensos no parcelamento'] = qtd_dias_suspensos_total
         tributario_consolidado['Data da Perscrição in abstrato considerando os dias de suspensão do parcelamento'] = \
-        tributario_consolidado['Prescrição in abstrato considerando a data do fato'] + relativedelta(
-            days=qtd_dias_suspensos_total)
+            tributario_consolidado['Prescrição in abstrato considerando a data do fato'] + relativedelta(
+                days=qtd_dias_suspensos_total)
 
     # funcao que sintetiza parte do código
     dicionario_streamlit = utilidades.streamlit_denuncia_x_suspensao_prescricao_x_verificar_idade(
@@ -295,7 +292,6 @@ def calc_prescricao_punitiva_tributaria():
     print('oioi')
     print(tributario_consolidado["Prescrição final"])
     print(type(tributario_consolidado["Prescrição final"]))
-
 
     if st.button('Calcular', key="tributario12"):
 
