@@ -267,6 +267,11 @@ crimesambientais = {
     'Art. 69-A, § 2º': 10
 }
 
+crimes_tributarios = {"Art 1º": 5, "Art. 2º": 2, "Art. 3º": 8}
+
 ctb = {key: calcula_prazo_prescriocional(valor) for key, valor in ctb_penas.items()}
 
 ambiental = {key: calcula_prazo_prescriocional(valor) for key, valor in crimesambientais.items()}
+
+tributario = {key: calcula_prazo_prescriocional(valor) for key, valor in crimes_tributarios.items()}
+

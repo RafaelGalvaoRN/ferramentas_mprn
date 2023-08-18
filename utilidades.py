@@ -1,11 +1,15 @@
+import pprint
 from datetime import datetime, date, timedelta
 import pandas as pd
 import dicionario_legislacao
 from dateutil.relativedelta import relativedelta
+import streamlit as st
+import pprint
 
 dic_prescricao = {**dicionario_legislacao.codigo_penal, **dicionario_legislacao.maria_da_penha,
                   **dicionario_legislacao.trafico, **dicionario_legislacao.estatuto_desarmamento,
-                  **dicionario_legislacao.lcp, **dicionario_legislacao.ctb, **dicionario_legislacao.ambiental}
+                  **dicionario_legislacao.lcp, **dicionario_legislacao.ctb, **dicionario_legislacao.ambiental,
+                  **dicionario_legislacao.tributario}
 
 
 #
@@ -49,25 +53,113 @@ dic_prescricao = {**dicionario_legislacao.codigo_penal, **dicionario_legislacao.
 #
 #                  }
 
+def streamlit_denuncia_x_suspensao_prescricao_x_verificar_idade(tributario_consolidado) -> dict:
+    dic_resultado = {}
 
-def soma_ano_mes_e_calcula_nova_prescricao(ano_mes: tuple, termo_inicial:datetime) -> datetime:
+    recebimento_denuncia = st.checkbox('Recebimento da Denúncia')
+    dic_resultado['Houve recebimento da denúncia?'] = recebimento_denuncia
+
+    if recebimento_denuncia:
+        data_minima = datetime.today() - timedelta(days=30 * 365)
+
+        dt_denuncia = st.date_input('Data do recebimento da Denúncia', format="DD/MM/YYYY", min_value=data_minima,
+                                    help='CP. Art. 117 - O curso da prescrição interrompe-se: I - pelo recebimento da denúncia ou da queixa;')
+
+        dic_resultado['Data de recebimento da Denuncia'] = dt_denuncia
+
+    suspensao_prescricao = st.checkbox('Suspensão da Prescrição')
+    dic_resultado['Houve suspensão da prescricão pela citação editalícia?'] = suspensao_prescricao
+
+    if suspensao_prescricao:
+        data_minima = datetime.today() - timedelta(days=30 * 365)
+
+        dt_inicio_suspensao = st.date_input('Data do Início da Suspensão', value=None, format="DD/MM/YYYY",
+                                            min_value=data_minima)
+        dt_fim_suspensao = st.date_input('Data do Fim da Suspensão', value=None, format="DD/MM/YYYY",
+                                         min_value=data_minima)
+
+        dic_resultado['Data de inicio da suspensão pela citação editalícia'] = dt_inicio_suspensao
+        dic_resultado['Data de fim da suspensão pela citação editalícia'] = dt_fim_suspensao
+
+        dic_resultado['Tempo em dias da suspensão pela citação editalícia'] = (
+                    dt_fim_suspensao - dt_inicio_suspensao).days
+
+    verificacao_idade = st.checkbox('Verificar Idade do Autor',
+                                    help='Art. 115 - São reduzidos de metade os prazos de prescrição quando o criminoso era, '
+                                         'ao tempo do crime, menor de 21 (vinte e um) anos, ou, na data da sentença, '
+                                         'maior de 70 (setenta) anos.')
+    dic_resultado['Houve verificação da idade do autor? '] = verificacao_idade
+
+
+
+    if verificacao_idade:
+        # Calcule a data de 90 anos atrás
+        data_minima = datetime.today() - timedelta(days=100 * 365)
+
+        # Agora você pode usar 'data_minima' como o valor de 'min_value'
+        dt_nascimento_autor = st.date_input('Data de nascimento do Autor do fato', value=None, format="DD/MM/YYYY",
+                                            min_value=data_minima)
+
+        dic_resultado['Data de nascimento do autor'] = dt_nascimento_autor
+
+
+        dt_fato = tributario_consolidado['Data do fato']
+
+        dic_resultado['Idade do autor na data do fato (anos)'] = calcular_idade_na_data(
+            dt_nascimento_autor,
+            dt_fato)
+
+        dic_resultado[
+            'Autor é menor de 21 anos na data dos fatos?'] = calcula_se_e_menor_21_tempo_crime(
+            dt_nascimento_autor, dt_fato)
+
+
+        dic_resultado['Idade atual do autor (anos)'] = calcular_idade(dt_nascimento_autor)
+
+
+        dic_resultado[
+            'Autor é maior de 70 anos?'] = calcula_se_e_maior_de_setenta_anos_na_sentenca(
+            dt_nascimento_autor, datetime.today())
+
+
+    return dic_resultado
+
+
+def streamlit_calcular_corrige_dic_imprime_tabela(tributario, dic):
+    if st.button('Calcular', key=tributario):
+        # converte date objetc in string
+
+        dic_executoria = {}
+        for key, valor in dic.items():
+            # Check if it's a date
+            if isinstance(valor, date):
+                dic_executoria[key] = valor.strftime('%d/%m/%Y')
+            # Check if it's a boolean True or False
+            elif valor is True:
+                dic_executoria[key] = "Sim"
+            elif valor is False:
+                dic_executoria[key] = "Não"
+            # Else, just assign the original value
+            else:
+                dic_executoria[key] = valor
+
+        st.table(converte_dic_dataframe_vertical(dic_executoria))
+
+
+def soma_ano_mes_e_calcula_nova_prescricao(ano_mes: tuple, termo_inicial: datetime) -> datetime:
     ano = ano_mes[0]
     mes = ano_mes[1]
 
     nova_data = termo_inicial + relativedelta(years=ano)
     nova_data = nova_data + relativedelta(months=mes)
 
-
     return nova_data
 
 
-def soma_ano_calcula_nova_prescricao(ano: int, termo_inicial:datetime) -> datetime:
-
+def soma_ano_calcula_nova_prescricao(ano: int, termo_inicial: datetime) -> datetime:
     nova_data = termo_inicial + relativedelta(years=ano)
 
-
     return nova_data
-
 
 
 def calcula_diferenca_entre_data_ate_atual(data: date) -> int:
@@ -253,6 +345,7 @@ def calcula_metade_tempo(anos: int, meses: int) -> tuple:
 
     return anos_metade, meses_metade
 
+
 # def calcula_diferenca_duas_datas_em_dias(data_antiga: str, data_nova: str) -> int:
 #     # convert data string in dic in datetime object
 #     data_antiga = datetime.strptime(data_antiga, "%Y-%m-%d").date()
@@ -331,6 +424,15 @@ def calcular_idade_na_data(data_de_nascimento, data_do_fato):
         idade -= 1
 
     return idade
+
+
+
+def analisa_prescricao_tributaria(tributario_consolidado: dict) -> bool:
+    pprint.pprint(tributario_consolidado)
+
+
+
+
 
 
 def analisa_prescricao(dicionario: dict, processo: str = None, reu: str = None):
