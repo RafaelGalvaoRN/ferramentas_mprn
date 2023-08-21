@@ -13,10 +13,8 @@ dic_prescricao = {**dicionario_legislacao.codigo_penal, **dicionario_legislacao.
 
 
 def streamlit_denuncia_x_suspensao_prescricao_x_verificar_idade(tributario_consolidado) -> dict:
-    dic_resultado = {}
-
     recebimento_denuncia = st.checkbox('Recebimento da Denúncia')
-    dic_resultado['Houve recebimento da denúncia?'] = recebimento_denuncia
+    tributario_consolidado['Houve recebimento da denúncia?'] = recebimento_denuncia
 
     if recebimento_denuncia:
         data_minima = datetime.today() - timedelta(days=30 * 365)
@@ -24,13 +22,26 @@ def streamlit_denuncia_x_suspensao_prescricao_x_verificar_idade(tributario_conso
         dt_denuncia = st.date_input('Data do recebimento da Denúncia', format="DD/MM/YYYY", min_value=data_minima,
                                     help='CP. Art. 117 - O curso da prescrição interrompe-se: I - pelo recebimento da denúncia ou da queixa;')
 
-        dic_resultado['Data de recebimento da Denuncia'] = dt_denuncia
+        tributario_consolidado['Data de recebimento da Denuncia'] = dt_denuncia
 
-        dic_resultado['Data da prescrição considerando o recebimento da denúncia'] = dt_denuncia + relativedelta(
+        tributario_consolidado[
+            'Data da prescrição considerando a data do fato até a data de recebimento da denúncia'] = \
+        tributario_consolidado['Data do fato'] + relativedelta(
             years=tributario_consolidado['Prescrição in abstrato (anos)'])
 
+        tributario_consolidado[
+            'Data da prescrição considerando a data do recebimento da denúncia até a presente data'] = dt_denuncia + relativedelta(
+            years=tributario_consolidado['Prescrição in abstrato (anos)'])
+
+        if tributario_consolidado.get('Houve suspensão pelo parcelamento tributário'):
+            tributario_consolidado[
+                'Data da prescrição considerando a data do fato até o recebimento da denúncia e a suspensão pelo parcelamento tributário'] = \
+                tributario_consolidado['Data do fato'] + relativedelta(
+                    years=tributario_consolidado['Prescrição in abstrato (anos)']) + relativedelta(
+                    days=tributario_consolidado['Quantidade total de dias suspensos no parcelamento'])
+
     suspensao_prescricao = st.checkbox('Suspensão da Prescrição')
-    dic_resultado['Houve suspensão da prescricão pela citação editalícia?'] = suspensao_prescricao
+    tributario_consolidado['Houve suspensão da prescricão pela citação editalícia?'] = suspensao_prescricao
 
     if suspensao_prescricao:
         data_minima = datetime.today() - timedelta(days=30 * 365)
@@ -40,23 +51,27 @@ def streamlit_denuncia_x_suspensao_prescricao_x_verificar_idade(tributario_conso
         dt_fim_suspensao = st.date_input('Data do Fim da Suspensão', value=None, format="DD/MM/YYYY",
                                          min_value=data_minima)
 
-        dic_resultado['Data de inicio da suspensão pela citação editalícia'] = dt_inicio_suspensao
-        dic_resultado['Data de fim da suspensão pela citação editalícia'] = dt_fim_suspensao
+        tributario_consolidado['Data de inicio da suspensão pela citação editalícia'] = dt_inicio_suspensao
+        tributario_consolidado['Data de fim da suspensão pela citação editalícia'] = dt_fim_suspensao
 
-        dic_resultado['Tempo em dias da suspensão pela citação editalícia'] = (
+        tributario_consolidado['Tempo em dias da suspensão pela citação editalícia'] = (
                 dt_fim_suspensao - dt_inicio_suspensao).days
 
+        tributario_consolidado[
+            'Data da prescrição considerando a data do recebimento da denúncia até a presente data e o período de dias de suspensão pela citação editalícia'] = dt_denuncia + relativedelta(
+            years=tributario_consolidado['Prescrição in abstrato (anos)'])  + relativedelta(days= tributario_consolidado['Tempo em dias da suspensão pela citação editalícia'])
+
         if recebimento_denuncia:
-            dic_resultado[
-                'Data da prescrição considerando o recebimento da denúncia e o período de dias de suspensão pela citação editalícia'] = dt_denuncia + relativedelta(
+            tributario_consolidado[
+                'Data da prescrição considerando a data de recebimento da denúncia até a presente data e o período de dias de suspensão pela citação editalícia'] = dt_denuncia + relativedelta(
                 years=tributario_consolidado['Prescrição in abstrato (anos)']) + relativedelta(
-                days=dic_resultado['Tempo em dias da suspensão pela citação editalícia'])
+                days=tributario_consolidado['Tempo em dias da suspensão pela citação editalícia'])
 
     verificacao_idade = st.checkbox('Verificar Idade do Autor',
                                     help='Art. 115 - São reduzidos de metade os prazos de prescrição quando o criminoso era, '
                                          'ao tempo do crime, menor de 21 (vinte e um) anos, ou, na data da sentença, '
                                          'maior de 70 (setenta) anos.')
-    dic_resultado['Houve verificação da idade do autor? '] = verificacao_idade
+    tributario_consolidado['Houve verificação da idade do autor?'] = verificacao_idade
 
     if verificacao_idade:
         # Calcule a data de 90 anos atrás
@@ -66,58 +81,59 @@ def streamlit_denuncia_x_suspensao_prescricao_x_verificar_idade(tributario_conso
         dt_nascimento_autor = st.date_input('Data de nascimento do Autor do fato', value=None, format="DD/MM/YYYY",
                                             min_value=data_minima)
 
-        dic_resultado['Data de nascimento do autor'] = dt_nascimento_autor
+        tributario_consolidado['Data de nascimento do autor'] = dt_nascimento_autor
 
         dt_fato = tributario_consolidado['Data do fato']
 
-        dic_resultado['Idade do autor na data do fato (anos)'] = calcular_idade_na_data(
+        tributario_consolidado['Idade do autor na data do fato (anos)'] = calcular_idade_na_data(
             dt_nascimento_autor,
             dt_fato)
 
-        dic_resultado[
+        tributario_consolidado[
             'Autor é menor de 21 anos na data dos fatos?'] = calcula_se_e_menor_21_tempo_crime(
             dt_nascimento_autor, dt_fato)
 
-        dic_resultado['Idade atual do autor (anos)'] = calcular_idade(dt_nascimento_autor)
+        tributario_consolidado['Idade atual do autor (anos)'] = calcular_idade(dt_nascimento_autor)
 
-        dic_resultado[
+        tributario_consolidado[
             'Autor é maior de 70 anos?'] = calcula_se_e_maior_de_setenta_anos_na_sentenca(
             dt_nascimento_autor, datetime.today())
 
-        if dic_resultado[
+        if tributario_consolidado[
             'Autor é menor de 21 anos na data dos fatos?'] or dic_resultado[
             'Autor é maior de 70 anos?']:
 
-            dic_resultado[
+            tributario_consolidado[
                 'Prescrição in abstrato considerando a reduçao pela metade pela idade'] = novo_prazo_prescricao = int(
                 tributario_consolidado['Prescrição in abstrato (anos)'] / 2)
 
-            dic_resultado[
+            tributario_consolidado[
                 'Data da Prescrição in abstrato considerando a reduçao pela metade pela idade e a data do fato'] = \
                 tributario_consolidado['Data do fato'] + relativedelta(years=novo_prazo_prescricao)
 
             if tributario_consolidado['Houve suspensão pelo parcelamento tributário']:
-                dic_resultado[
+                tributario_consolidado[
                     'Prescrição in abstrato considerando a reduçao pela metade pela idade e os dias de suspensao do parcelamento'] = \
                     tributario_consolidado['Data do fato'] + relativedelta(years=novo_prazo_prescricao) + relativedelta(
                         days=tributario_consolidado['Quantidade total de dias suspensos no parcelamento'])
 
             if recebimento_denuncia:
-                dic_resultado[
+                tributario_consolidado[
                     'Prescrição in abstrato considerando a reduçao pela metade pela idade e o recebimento da denúncia'] = \
-                    dic_resultado['Data de recebimento da Denuncia'] + relativedelta(years=novo_prazo_prescricao)
+                    tributario_consolidado['Data de recebimento da Denuncia'] + relativedelta(
+                        years=novo_prazo_prescricao)
 
                 if suspensao_prescricao:
-                    dic_resultado[
+                    tributario_consolidado[
                         'Prescrição in abstrato considerando a reduçao pela metade pela idade e o recebimento da denúncia e a suspensão da prescrição editalícia'] = \
-                        dic_resultado['Data de recebimento da Denuncia'] + relativedelta(
+                        tributario_consolidado['Data de recebimento da Denuncia'] + relativedelta(
                             years=novo_prazo_prescricao) + relativedelta(
-                            days=dic_resultado['Tempo em dias da suspensão pela citação editalícia'])
+                            days=tributario_consolidado['Tempo em dias da suspensão pela citação editalícia'])
 
                     # print('aqio aqio')
             # dic_resultado['Nova prescrição in abstrato (anos e meses)' ] = tributario_consolidado
 
-    return dic_resultado
+    return tributario_consolidado
 
 
 def streamlit_calcular_corrige_dic_imprime_tabela(tributario, dic):
@@ -153,7 +169,6 @@ def get_latest_datetime(d):
     # Retorna o datetime mais recente, se houver algum
     if datetimes:
         return max(datetimes)
-
 
 
 def soma_ano_mes_e_calcula_nova_prescricao(ano_mes: tuple, termo_inicial: datetime) -> datetime:
@@ -449,9 +464,6 @@ def calcular_idade_na_data(data_de_nascimento, data_do_fato):
         idade -= 1
 
     return idade
-
-
-
 
 
 def analisa_prescricao(dicionario: dict, processo: str = None, reu: str = None):
