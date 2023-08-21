@@ -26,8 +26,8 @@ def streamlit_denuncia_x_suspensao_prescricao_x_verificar_idade(tributario_conso
 
         tributario_consolidado[
             'Data da prescrição considerando a data do fato até a data de recebimento da denúncia'] = \
-        tributario_consolidado['Data do fato'] + relativedelta(
-            years=tributario_consolidado['Prescrição in abstrato (anos)'])
+            tributario_consolidado['Data do fato'] + relativedelta(
+                years=tributario_consolidado['Prescrição in abstrato (anos)'])
 
         tributario_consolidado[
             'Data da prescrição considerando a data do recebimento da denúncia até a presente data'] = dt_denuncia + relativedelta(
@@ -57,9 +57,6 @@ def streamlit_denuncia_x_suspensao_prescricao_x_verificar_idade(tributario_conso
         tributario_consolidado['Tempo em dias da suspensão pela citação editalícia'] = (
                 dt_fim_suspensao - dt_inicio_suspensao).days
 
-        tributario_consolidado[
-            'Data da prescrição considerando a data do recebimento da denúncia até a presente data e o período de dias de suspensão pela citação editalícia'] = dt_denuncia + relativedelta(
-            years=tributario_consolidado['Prescrição in abstrato (anos)'])  + relativedelta(days= tributario_consolidado['Tempo em dias da suspensão pela citação editalícia'])
 
         if recebimento_denuncia:
             tributario_consolidado[
@@ -100,7 +97,7 @@ def streamlit_denuncia_x_suspensao_prescricao_x_verificar_idade(tributario_conso
             dt_nascimento_autor, datetime.today())
 
         if tributario_consolidado[
-            'Autor é menor de 21 anos na data dos fatos?'] or dic_resultado[
+            'Autor é menor de 21 anos na data dos fatos?'] or tributario_consolidado[
             'Autor é maior de 70 anos?']:
 
             tributario_consolidado[
@@ -160,12 +157,12 @@ def streamlit_calcular_corrige_dic_imprime_tabela(tributario, dic):
 def get_latest_datetime(d):
     # Filtra todos os valores que são instâncias de datetime
 
-    print('oiosiosiadosiodi')
-    print(d)
+
+
 
     datetimes = [value for value in d.values() if isinstance(value, (date, datetime))]
 
-    print(datetimes)
+
     # Retorna o datetime mais recente, se houver algum
     if datetimes:
         return max(datetimes)
@@ -559,7 +556,6 @@ def analisa_prescricao(dicionario: dict, processo: str = None, reu: str = None):
             tempo_decorrido_para_prescricao = calcula_diferenca_entre_duas_datas(dicionario['data_fato'],
                                                                                  dicionario[
                                                                                      'Dt_Denuncia'])
-
             # analisa entre a data do fato e o recebimento da denúncia
             if tempo_decorrido_para_prescricao > dic_prescricao[crime_analisado]:
                 parecer = f'''

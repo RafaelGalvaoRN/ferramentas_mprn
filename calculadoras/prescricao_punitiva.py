@@ -292,42 +292,48 @@ def calc_prescricao_punitiva_tributaria():
     if st.button('Calcular', key="tributario12"):
         current_date = datetime.now().date()
 
-        prescricao_date = tributario_consolidado.get("Prescrição in abstrato considerando a data do fato")
-        if prescricao_date:
-            if tributario_consolidado.get("Prescrição in abstrato considerando a data do fato") < current_date:
-                st.error('PRESCREVEU ENTRE A DATA DO FATO E A PRESENTE DATA', icon='🚫')
-            else:
-                st.success('NÃO PRESCREVEU ENTRE A DATA DO FATO E A PRESENTE DATA', icon="✅")
+        if not tributario_consolidado.get('Houve verificação da idade do autor?') or not tributario_consolidado[
+                'Autor é menor de 21 anos na data dos fatos?'] or tributario_consolidado[
+                'Autor é maior de 70 anos?']:
 
-        if suspensao_parcelamento:
-            if tributario_consolidado[
-                'Data da Prescrição in abstrato considerando os dias de suspensão do parcelamento'] < current_date:
-                st.error('PRESCREVEU ENTRE A DATA DO FATO E A PRESENTE DATA CONSIDERADO A SUSPENSÃO PELO PARCELAMENTO',
-                         icon='🚫')
-            else:
-                st.success(
-                    'NÃO PRESCREVEU ENTRE A DATA DO FATO E A PRESENTE DATA CONSIDERANDO A SUSPENSÃO PELO PARCELAMENTO',
-                    icon="✅")
 
-        if tributario_consolidado.get('Houve recebimento da denúncia?'):
-            if tributario_consolidado['Data da prescrição considerando a data do fato até a data de recebimento da denúncia'] < current_date:
-                st.error('PRESCREVEU ENTRE A DATA DO FATO E A DATA DE RECEBIMENTO DA DENÚNCIA',
-                         icon='🚫')
-            else:
-                st.success(
-                    'NÃO PRESCREVEU ENTRE A DATA DO FATO E A DATA DE RECEBIMENTO DA DENÚNCIA',
-                    icon="✅")
+            prescricao_date = tributario_consolidado.get("Prescrição in abstrato considerando a data do fato")
 
-        if tributario_consolidado.get('Houve suspensão da prescricão pela citação editalícia?') and tributario_consolidado.get('Houve recebimento da denúncia?'):
-            if tributario_consolidado[
-                'Data da prescrição considerando a data do recebimento da denúncia até a presente data e o período de dias de suspensão pela citação editalícia'] < current_date:
+            if prescricao_date and not tributario_consolidado.get('Houve recebimento da denúncia?'):
+                if tributario_consolidado.get("Prescrição in abstrato considerando a data do fato") < current_date:
+                    st.error('PRESCREVEU ENTRE A DATA DO FATO E A PRESENTE DATA', icon='🚫')
+                else:
+                    st.success('NÃO PRESCREVEU ENTRE A DATA DO FATO E A PRESENTE DATA', icon="✅")
 
-                st.error('PRESCREVEU ENTRE A DATA DO RECEBIMENTO DA DENÚNCIA E A PRESENTE DATA CONSIDERANDO A SUSPENSÃO PELA CITAÇÃO EDITALÍCIA',
-                         icon='🚫')
-            else:
-                st.success(
-                    'NÃO PRESCREVEU ENTRE A DATA DO RECEBIMENTO DA DENÚNCIA E A PRESENTE DATA CONSIDERANDO A SUSPENSÃO PELA CITAÇÃO EDITALÍCIA',
-                    icon="✅")
+            if suspensao_parcelamento:
+                if tributario_consolidado[
+                    'Data da Prescrição in abstrato considerando os dias de suspensão do parcelamento'] < current_date:
+                    st.error('PRESCREVEU ENTRE A DATA DO FATO E A PRESENTE DATA CONSIDERADO A SUSPENSÃO PELO PARCELAMENTO',
+                             icon='🚫')
+                else:
+                    st.success(
+                        'NÃO PRESCREVEU ENTRE A DATA DO FATO E A PRESENTE DATA CONSIDERANDO A SUSPENSÃO PELO PARCELAMENTO',
+                        icon="✅")
+
+            if tributario_consolidado.get('Houve recebimento da denúncia?'):
+                if tributario_consolidado['Data da prescrição considerando a data do fato até a data de recebimento da denúncia'] < current_date:
+                    st.error('PRESCREVEU ENTRE A DATA DO FATO E A DATA DE RECEBIMENTO DA DENÚNCIA',
+                             icon='🚫')
+                else:
+                    st.success(
+                        'NÃO PRESCREVEU ENTRE A DATA DO FATO E A DATA DE RECEBIMENTO DA DENÚNCIA',
+                        icon="✅")
+
+            if tributario_consolidado.get('Houve suspensão da prescricão pela citação editalícia?') and tributario_consolidado.get('Houve recebimento da denúncia?'):
+                if tributario_consolidado[
+                    'Data da prescrição considerando a data do recebimento da denúncia até a presente data e o período de dias de suspensão pela citação editalícia'] < current_date:
+
+                    st.error('PRESCREVEU ENTRE A DATA DO RECEBIMENTO DA DENÚNCIA E A PRESENTE DATA CONSIDERANDO A SUSPENSÃO PELA CITAÇÃO EDITALÍCIA',
+                             icon='🚫')
+                else:
+                    st.success(
+                        'NÃO PRESCREVEU ENTRE A DATA DO RECEBIMENTO DA DENÚNCIA E A PRESENTE DATA CONSIDERANDO A SUSPENSÃO PELA CITAÇÃO EDITALÍCIA',
+                        icon="✅")
 
         if tributario_consolidado.get('Houve verificação da idade do autor?'):
 
@@ -348,7 +354,7 @@ def calc_prescricao_punitiva_tributaria():
                         'NÃO PRESCREVEU ENTRE A DATA DO FATO E A PRESENTE DATA CONSIDERANDO A REDUÇÃO PELA IDADE E OS DIAS DE PARCELAMENTO',
                         icon="✅")
 
-                if tributario_consolidado.get('Houve recebimento da denúncia?'):
+                if tributario_consolidado.get('Houve recebimento da denúncia?') and not tributario_consolidado['Houve suspensão pelo parcelamento tributário']:
                     if tributario_consolidado.get(
                             'Prescrição in abstrato considerando a reduçao pela metade pela idade e o recebimento da denúncia') < current_date:
                         st.error(
