@@ -60,7 +60,7 @@ def streamlit_denuncia_x_suspensao_prescricao_x_verificar_idade(tributario_conso
 
         if recebimento_denuncia:
             tributario_consolidado[
-                'Data da prescrição considerando a data de recebimento da denúncia até a presente data e o período de dias de suspensão pela citação editalícia'] = dt_denuncia + relativedelta(
+                'Data da prescrição considerando a data do recebimento da denúncia até a presente data e o período de dias de suspensão pela citação editalícia'] = dt_denuncia + relativedelta(
                 years=tributario_consolidado['Prescrição in abstrato (anos)']) + relativedelta(
                 days=tributario_consolidado['Tempo em dias da suspensão pela citação editalícia'])
 
