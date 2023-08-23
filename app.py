@@ -24,6 +24,9 @@ with tab2:
     elif submenu == "Rito Tributário":
         prescricao_punitiva.calc_prescricao_punitiva_tributaria()
 
+    elif submenu == "Rito do Júri":
+        prescricao_punitiva.calc_prescricao_punitiva_juri()
+
 with tab3:
     prescricao_retroativa.calc_prescricao_retroativa()
 

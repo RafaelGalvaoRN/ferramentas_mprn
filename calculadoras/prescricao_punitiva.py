@@ -9,6 +9,7 @@ import copy
 import inspect
 import dicionario_legislacao as dl
 from dateutil.relativedelta import relativedelta
+from controler import Acao
 
 
 def calc_prescricao_punitiva():
@@ -406,3 +407,20 @@ def calc_prescricao_punitiva_tributaria():
                 tributario_consolidado[key] = valor
 
         st.table(converte_dic_dataframe_vertical(tributario_consolidado))
+
+
+def calc_prescricao_punitiva_juri():
+    legislacao = st.radio('Legislação', ['Código Penal'])
+
+    crimes = [crime for crime in dicionario_legislacao.juri.keys()]
+    crimes_ordenados = sorted(crimes)
+    tipo_penal = st.selectbox('Tipo Penal', crimes_ordenados)
+
+    processo = st.text_input(label='Processo', max_chars=30)
+    reu = st.text_input(label='Réu', max_chars=30)
+    data_minima = datetime.today() - timedelta(days=60 * 365)
+    data_fato = st.date_input(label='Data do Fato', value=None, format="DD/MM/YYYY", min_value=data_minima,
+                              help="Art. 111 - A prescrição, antes de transitar em julgado a sentença final, começa a correr: I - do dia em que o crime se consumou; II - no caso de tentativa, do dia em que cessou a atividade criminosa; III - nos crimes permanentes, do dia em que cessou a permanência; IV - nos de bigamia e nos de falsificação ou alteração de assentamento do registro civil, da data em que o fato se tornou conhecido. V - nos crimes contra a dignidade sexual ou que envolvam violência contra a criança e o adolescente, previstos neste Código ou em legislação especial, da data em que a vítima completar 18 (dezoito) anos, salvo se a esse tempo já houver sido proposta a ação penal.")
+
+    Acao(data_fato, legislacao, tipo_penal)
+    print(Acao)
