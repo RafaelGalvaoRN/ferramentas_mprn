@@ -410,7 +410,7 @@ def calc_prescricao_punitiva_tributaria():
 
 
 def calc_prescricao_punitiva_juri():
-    legislacao = st.radio('Legislação', ['Código Penal'])
+    legislacao = st.radio('Legislação', ['Código Penal - Júri'])
 
     crimes = [crime for crime in dicionario_legislacao.juri.keys()]
     crimes_ordenados = sorted(crimes)
@@ -422,5 +422,85 @@ def calc_prescricao_punitiva_juri():
     data_fato = st.date_input(label='Data do Fato', value=None, format="DD/MM/YYYY", min_value=data_minima,
                               help="Art. 111 - A prescrição, antes de transitar em julgado a sentença final, começa a correr: I - do dia em que o crime se consumou; II - no caso de tentativa, do dia em que cessou a atividade criminosa; III - nos crimes permanentes, do dia em que cessou a permanência; IV - nos de bigamia e nos de falsificação ou alteração de assentamento do registro civil, da data em que o fato se tornou conhecido. V - nos crimes contra a dignidade sexual ou que envolvam violência contra a criança e o adolescente, previstos neste Código ou em legislação especial, da data em que a vítima completar 18 (dezoito) anos, salvo se a esse tempo já houver sido proposta a ação penal.")
 
-    Acao(data_fato, legislacao, tipo_penal)
-    print(Acao)
+    processo = Acao(data_fato, legislacao, tipo_penal)
+
+    recebimento_denuncia = st.checkbox('Recebimento da Denúncia')
+
+
+    if recebimento_denuncia:
+
+        dt_denuncia = st.date_input('Data do recebimento da Denúncia', format="DD/MM/YYYY", min_value=data_minima,
+                                    help='CP. Art. 117 - O curso da prescrição interrompe-se: I - pelo recebimento da denúncia ou da queixa;')
+
+        processo.get_recebimento_denuncia(dt_denuncia)
+
+
+    suspensao_prescricao = st.checkbox('Suspensão da Prescrição')
+
+    if suspensao_prescricao:
+
+        dt_inicio_suspensao = st.date_input('Data do Início da Suspensão', value=None, format="DD/MM/YYYY",
+                                            min_value=data_minima)
+        dt_fim_suspensao = st.date_input('Data do Fim da Suspensão', value=None, format="DD/MM/YYYY",
+                                         min_value=data_minima)
+
+        tempo_suspensao =(dt_fim_suspensao - dt_inicio_suspensao).days
+
+        processo.get_suspensao_posterior_denuncia(tempo_suspensao)
+
+
+
+    pronuncia = st.checkbox('Houve sentença de pronúncia', help="Art. 117 - O curso da prescrição interrompe-se: II - pela pronúncia;")
+    if pronuncia:
+        # Agora você pode usar 'data_minima' como o valor de 'min_value'
+        dt_pronuncia = st.date_input('Data da sentença de pronúncia', value=None, format="DD/MM/YYYY",
+                                            min_value=data_minima)
+
+        processo.get_data_pronuncia(dt_pronuncia)
+
+    dec_confirma_pronuncia = st.checkbox('Houve decisão confirmatória de pronúncia',
+                            help="Art. 117 - O curso da prescrição interrompe-se: III - pela decisão confirmatória da pronúncia;")
+    if dec_confirma_pronuncia:
+        # Agora você pode usar 'data_minima' como o valor de 'min_value'
+        dec_confirma_pronuncia = st.date_input('Data da decisão confirmatória de pronúncia', value=None, format="DD/MM/YYYY",
+                                     min_value=data_minima)
+
+        processo.get_data_dec_conf_pronuncia(dec_confirma_pronuncia)
+
+    verificacao_idade = st.checkbox('Verificar Idade do Autor',
+                                    help='Art. 115 - São reduzidos de metade os prazos de prescrição quando o criminoso era, '
+                                         'ao tempo do crime, menor de 21 (vinte e um) anos, ou, na data da sentença, '
+                                         'maior de 70 (setenta) anos.')
+    if verificacao_idade:
+
+        # Agora você pode usar 'data_minima' como o valor de 'min_value'
+        dt_nascimento_autor = st.date_input('Data de nascimento do Autor do fato', value=None, format="DD/MM/YYYY",
+                                            min_value=data_minima)
+
+        processo.check_reducao_idade_autor(dt_nascimento_autor)
+
+    if st.button('Calcular', key="juri"):
+
+        print('oi oi')
+        print(processo.check_prescricao_anterior_denuncia())
+        print(processo.check_prescricao_posterior_denuncia())
+        print(processo.check_prescricao_posterior_dec_conf_pronuncia())
+
+
+
+
+        if processo.prescreveu:
+            st.error('PRESCREVEU', icon='🚫')
+        else:
+            st.success('NÃO PRESCREVEU', icon="✅")
+
+
+        st.table(utilidades.converte_dic_dataframe_vertical(processo.return_data()))
+
+
+
+
+
+
+
+
