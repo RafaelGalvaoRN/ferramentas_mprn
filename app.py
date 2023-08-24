@@ -1,10 +1,18 @@
 import streamlit as st
 from calculadoras import prescricao_punitiva, prescricao_retroativa, prescricao_executoria
+from painel.controle_caso import evidencias
+
+st.set_page_config(
+    page_title="Usar PyGWalker no Streamlit",
+    layout="wide"
+)
+
+
 
 st.header('Calculadoras')
-tab1, tab2, tab3, tab4 = st.tabs(["Intro", "Prescrição Punitiva",
+tab1, tab2, tab3, tab4, tab5 = st.tabs(["Intro", "Prescrição Punitiva",
                                   "Prescrição Retroativa",
-                                  "Prescrição Executória"])
+                                  "Prescrição Executória", "Visualizador"])
 
 with tab1:
     st.title("Boas Vindas!")
@@ -34,3 +42,6 @@ with tab3:
 
 with tab4:
     prescricao_executoria.calc_prescricao_executoria()
+
+with tab5:
+    evidencias()
