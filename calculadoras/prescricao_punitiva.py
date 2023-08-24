@@ -288,9 +288,6 @@ def calc_prescricao_punitiva_tributaria():
     utilidades.streamlit_denuncia_x_suspensao_prescricao_x_verificar_idade(
         tributario_consolidado)
 
-
-
-
     if st.button('Calcular', key="tributario12"):
         current_date = datetime.now().date()
 
@@ -329,7 +326,7 @@ def calc_prescricao_punitiva_tributaria():
 
             if tributario_consolidado.get(
                     'Houve suspensão da prescricão pela citação editalícia?') and tributario_consolidado.get(
-                    'Houve recebimento da denúncia?'):
+                'Houve recebimento da denúncia?'):
                 if tributario_consolidado[
                     'Data da prescrição considerando a data do recebimento da denúncia até a presente data e o período de dias de suspensão pela citação editalícia'] < current_date:
 
@@ -410,7 +407,7 @@ def calc_prescricao_punitiva_tributaria():
 
 
 def calc_prescricao_punitiva_juri():
-    legislacao = st.radio('Legislação', ['Código Penal - Júri'])
+    legislacao = st.radio('Legislação', ['Crimes Dolosos contra a vida'])
 
     crimes = [crime for crime in dicionario_legislacao.juri.keys()]
     crimes_ordenados = sorted(crimes)
@@ -426,44 +423,41 @@ def calc_prescricao_punitiva_juri():
 
     recebimento_denuncia = st.checkbox('Recebimento da Denúncia')
 
-
     if recebimento_denuncia:
-
         dt_denuncia = st.date_input('Data do recebimento da Denúncia', format="DD/MM/YYYY", min_value=data_minima,
                                     help='CP. Art. 117 - O curso da prescrição interrompe-se: I - pelo recebimento da denúncia ou da queixa;')
 
         processo.get_recebimento_denuncia(dt_denuncia)
-
+        print(processo.check_prescricao_posterior_denuncia())
 
     suspensao_prescricao = st.checkbox('Suspensão da Prescrição')
 
-    if suspensao_prescricao:
-
+    if suspensao_prescricao and recebimento_denuncia:
         dt_inicio_suspensao = st.date_input('Data do Início da Suspensão', value=None, format="DD/MM/YYYY",
                                             min_value=data_minima)
         dt_fim_suspensao = st.date_input('Data do Fim da Suspensão', value=None, format="DD/MM/YYYY",
                                          min_value=data_minima)
 
-        tempo_suspensao =(dt_fim_suspensao - dt_inicio_suspensao).days
+        tempo_suspensao = (dt_fim_suspensao - dt_inicio_suspensao).days
 
         processo.get_suspensao_posterior_denuncia(tempo_suspensao)
 
-
-
-    pronuncia = st.checkbox('Houve sentença de pronúncia', help="Art. 117 - O curso da prescrição interrompe-se: II - pela pronúncia;")
+    pronuncia = st.checkbox('Houve sentença de pronúncia',
+                            help="Art. 117 - O curso da prescrição interrompe-se: II - pela pronúncia;")
     if pronuncia:
         # Agora você pode usar 'data_minima' como o valor de 'min_value'
         dt_pronuncia = st.date_input('Data da sentença de pronúncia', value=None, format="DD/MM/YYYY",
-                                            min_value=data_minima)
+                                     min_value=data_minima)
 
         processo.get_data_pronuncia(dt_pronuncia)
 
     dec_confirma_pronuncia = st.checkbox('Houve decisão confirmatória de pronúncia',
-                            help="Art. 117 - O curso da prescrição interrompe-se: III - pela decisão confirmatória da pronúncia;")
+                                         help="Art. 117 - O curso da prescrição interrompe-se: III - pela decisão confirmatória da pronúncia;")
     if dec_confirma_pronuncia:
         # Agora você pode usar 'data_minima' como o valor de 'min_value'
-        dec_confirma_pronuncia = st.date_input('Data da decisão confirmatória de pronúncia', value=None, format="DD/MM/YYYY",
-                                     min_value=data_minima)
+        dec_confirma_pronuncia = st.date_input('Data da decisão confirmatória de pronúncia', value=None,
+                                               format="DD/MM/YYYY",
+                                               min_value=data_minima)
 
         processo.get_data_dec_conf_pronuncia(dec_confirma_pronuncia)
 
@@ -472,7 +466,6 @@ def calc_prescricao_punitiva_juri():
                                          'ao tempo do crime, menor de 21 (vinte e um) anos, ou, na data da sentença, '
                                          'maior de 70 (setenta) anos.')
     if verificacao_idade:
-
         # Agora você pode usar 'data_minima' como o valor de 'min_value'
         dt_nascimento_autor = st.date_input('Data de nascimento do Autor do fato', value=None, format="DD/MM/YYYY",
                                             min_value=data_minima)
@@ -481,25 +474,17 @@ def calc_prescricao_punitiva_juri():
 
     if st.button('Calcular', key="juri"):
 
-        print('oi oi')
         print(processo.check_prescricao_anterior_denuncia())
-        print(processo.check_prescricao_posterior_denuncia())
-        print(processo.check_prescricao_posterior_pronuncia())
-        print(processo.check_prescricao_posterior_dec_conf_pronuncia())
 
+        if pronuncia and recebimento_denuncia:
+            print(processo.check_prescricao_posterior_pronuncia())
+
+        if dec_confirma_pronuncia:
+            print(processo.check_prescricao_posterior_dec_conf_pronuncia())
 
         if processo.prescreveu:
             st.error('PRESCREVEU', icon='🚫')
         else:
             st.success('NÃO PRESCREVEU', icon="✅")
 
-
         st.table(utilidades.converte_dic_dataframe_vertical(processo.return_data()))
-
-
-
-
-
-
-
-

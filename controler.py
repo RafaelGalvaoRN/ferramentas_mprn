@@ -71,7 +71,7 @@ class Acao:
             return dicionario_legislacao.ambiental[self.crime]
 
 
-        elif self.legislacao == "Código Penal - Júri":
+        elif self.legislacao == "Crimes Dolosos contra a vida":
 
             return dicionario_legislacao.juri[self.crime]
 
@@ -130,25 +130,26 @@ class Acao:
                 return False
 
     def check_prescricao_posterior_denuncia(self):
-        if not self.data_pronuncia:
-            self.data_prescricao_posterior_denuncia = self.data_rec_denuncia + timedelta(
-                days=(self.prazo_prescricao * 365)) + timedelta(days=self.suspensao_posterior_denuncia)
+        if self.data_rec_denuncia:
+            if not self.data_pronuncia:
+                self.data_prescricao_posterior_denuncia = self.data_rec_denuncia + timedelta(
+                    days=(self.prazo_prescricao * 365)) + timedelta(days=self.suspensao_posterior_denuncia)
 
-            if self.data_prescricao_posterior_denuncia < datetime.date.today():
-                self.prescreveu = True
-                return True
-            else:
-                return False
+                if self.data_prescricao_posterior_denuncia < datetime.date.today():
+                    self.prescreveu = True
+                    return True
+                else:
+                    return False
 
-        if self.data_pronuncia:
-            self.data_prescricao_posterior_denuncia = self.data_rec_denuncia + timedelta(
-                days=(self.prazo_prescricao * 365)) + timedelta(days=self.suspensao_posterior_denuncia)
+            if self.data_pronuncia:
+                self.data_prescricao_posterior_denuncia = self.data_rec_denuncia + timedelta(
+                    days=(self.prazo_prescricao * 365)) + timedelta(days=self.suspensao_posterior_denuncia)
 
-            if self.data_prescricao_posterior_denuncia < self.data_pronuncia:
-                self.prescreveu = True
-                return True
-            else:
-                return False
+                if self.data_prescricao_posterior_denuncia < self.data_pronuncia:
+                    self.prescreveu = True
+                    return True
+                else:
+                    return False
 
     def check_prescricao_posterior_pronuncia(self):
         if not self.data_dec_conf_pronuncia:
@@ -207,8 +208,9 @@ class Acao:
                 days=(self.prazo_prescricao * 365)) + timedelta(
                 days=self.suspensao_anterior_denuncia)
 
-            self.data_prescricao_posterior_denuncia = self.data_rec_denuncia + timedelta(
-                days=(self.prazo_prescricao * 365)) + timedelta(days=self.suspensao_posterior_denuncia)
+            if self.data_rec_denuncia:
+                self.data_prescricao_posterior_denuncia = self.data_rec_denuncia + timedelta(
+                    days=(self.prazo_prescricao * 365)) + timedelta(days=self.suspensao_posterior_denuncia)
 
             self.reducao_metade_idade = True
             self.check_prescricao_anterior_denuncia()
