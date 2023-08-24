@@ -15,6 +15,7 @@ with tab1:
         "Objetivando imprimir celeridade aos trabalhos, iniciamos por desenvolver calculadoras de prescrição para análise dos processos penais.")
     st.write("Sugestões e ajustes podem ser feitas pelo e-mail: rafaelgalvaorn@hotmail.com")
 
+
 with tab2:
     submenu = st.radio("",
                        ["Escolha o tipo de calculadora de prescrição punitiva", "Rito Ordinário", "Rito Tributário", "Rito do Júri"], index=0)
