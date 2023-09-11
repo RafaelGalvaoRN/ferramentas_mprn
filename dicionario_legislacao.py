@@ -13,8 +13,10 @@ def calcula_prazo_prescriocional(tempo):
         return 20
 
 
-codigo_penal = {'Ameaça': 3, 'Infanticídio': 12, "Lesão Corporal - Art 129": 4,
-                "Lesão Grave - Art 129, §1": 12, "Lesão Gravíssima - Art 129, §2": 12,
+codigo_penal = {'Ameaça': 3, 'Infanticídio': 12,
+                "Lesão Corporal - Art 129": 4,
+                "Lesão Corporal grave - Art 129, §1": 12,
+                "Lesão Corporal gravíssima - Art 129, §2": 12,
                 "Lesão Corporal seguida de morte - Art 129, §3": 16,
                 "Lesão Corporal culposa - Art 129, §6": 4,
                 "Lesão Corporal privilegiada - Art 129, §4": 3,
