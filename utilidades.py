@@ -237,6 +237,14 @@ def calcula_diferenca_entre_data_ate_atual_em_dias(data: datetime) -> int:
     return diferenca_dt_fato_x_dt_atual_dias
 
 
+
+def calcula_se_tem_prescricao_retroativa(data_fato):
+    data_vigencia_lei = datetime(2010, 5, 5).date()
+    if data_fato >= data_vigencia_lei:
+        return False
+    return True
+
+
 def calcula_diferenca_entre_duas_datas_em_anos_meses_dias(data_preterita: datetime, data_posterior: date,
                                                           tempo_suspensao_dias=0):
     # Calcula a diferença entre a data do fato e a data atual

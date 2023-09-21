@@ -36,9 +36,15 @@ def calc_prescricao_retroativa():
 
     data_fato_retroativa = st.date_input(label='Data do Fato', format="DD/MM/YYYY", min_value=data_minima,
                                          key="data_fato_retroativa",
-                                         help="Art. 111 - A prescrição, antes de transitar em julgado a sentença final, começa a correr: I - do dia em que o crime se consumou; II - no caso de tentativa, do dia em que cessou a atividade criminosa; III - nos crimes permanentes, do dia em que cessou a permanência; IV - nos de bigamia e nos de falsificação ou alteração de assentamento do registro civil, da data em que o fato se tornou conhecido. V - nos crimes contra a dignidade sexual ou que envolvam violência contra a criança e o adolescente, previstos neste Código ou em legislação especial, da data em que a vítima completar 18 (dezoito) anos, salvo se a esse tempo já houver sido proposta a ação penal.")
+                                         help="📖 Art. 111 - A prescrição, antes de transitar em julgado a sentença final, começa a correr: I - do dia em que o crime se consumou; II - no caso de tentativa, do dia em que cessou a atividade criminosa; III - nos crimes permanentes, do dia em que cessou a permanência; IV - nos de bigamia e nos de falsificação ou alteração de assentamento do registro civil, da data em que o fato se tornou conhecido. V - nos crimes contra a dignidade sexual ou que envolvam violência contra a criança e o adolescente, previstos neste Código ou em legislação especial, da data em que a vítima completar 18 (dezoito) anos, salvo se a esse tempo já houver sido proposta a ação penal."
+                                              "<->"
+                                              "📖 A Lei nº 12.234/10 ao dar nova redação ao art. 110, §1º, do Código Penal, vedou o reconhecimento da prescrição da pretensão punitiva na modalidade retroativa entre a data do fato e o recebimento da denúncia")
 
     dicionario_retroativa['Data do fato'] = data_fato_retroativa
+
+    dicionario_retroativa["Há prescrição retroativa pela pena in concreto entre a data do fato e o recebimento da Denúncia?"] = calcula_se_tem_prescricao_retroativa(data_fato_retroativa)
+
+
 
     dt_denuncia_retroativa = st.date_input('Data do recebimento da Denúncia', key="dt_denuncia_retroativa",
                                            format="DD/MM/YYYY", min_value=data_minima,
@@ -57,13 +63,13 @@ def calc_prescricao_retroativa():
         data_pronuncia = st.date_input('Data da Pronúncia',
                                        key="data_pronuncia",
                                        value=None, format="DD/MM/YYYY",
-                                       min_value=data_minima,
+                                       min_value=dt_denuncia_retroativa,
                                        help='Art. 117 - O curso da prescrição interrompe-se: (...) II - pela pronúncia;')
 
         data_decisao_confirmatoria_pronuncia = st.date_input('Data da decisão confirmatória da Pronúncia',
                                                              key="data_decisaao_confirmatoria_pronuncia",
                                                              value=None, format="DD/MM/YYYY",
-                                                             min_value=data_minima,
+                                                             min_value=data_pronuncia,
                                                              help='Art. 117 - O curso da prescrição interrompe-se: (...) III - pela decisão confirmatória da pronúncia;')
 
         dicionario_retroativa['Data da pronúncia'] = data_pronuncia
@@ -95,7 +101,7 @@ def calc_prescricao_retroativa():
                                                        min_value=data_minima)
         dt_fim_suspensao_retroativa = st.date_input('Data do Fim da Suspensão', key="dt_fim_suspensao_retroativa",
                                                     value=None, format="DD/MM/YYYY",
-                                                    min_value=data_minima)
+                                                    min_value=dt_inicio_suspensao_retroativa)
 
         dicionario_retroativa['Data de Início da Suspensão'] = dt_inicio_suspensao_retroativa
         dicionario_retroativa['Data de Fim da Suspensão'] = dt_fim_suspensao_retroativa
@@ -147,8 +153,9 @@ def calc_prescricao_retroativa():
             'Idade do autor na presente data?'] = utilidades.calcular_idade_na_data(dt_nascimento_autor_retroativa,
                                                                                     datetime.today())
 
-    verificar_data_acordao = st.checkbox('Analisar prescrição entre a data da sentença e a data do Acórdão',
-                                         key="verificacao_data_acordao")
+    verificar_data_acordao = st.checkbox('Analisar prescrição entre a data da sentença e a data do acórdão',
+                                         key="verificacao_data_acordao", help="Art. 117 - O curso da prescrição interrompe-se: IV - pela publicação da sentença ou acórdão condenatórios recorríveis;")
+
     dicionario_retroativa['Houve verificação da data do Acórdão?'] = verificar_data_acordao
 
     if verificar_data_acordao:
@@ -248,6 +255,10 @@ def calc_prescricao_retroativa():
                 dicionario_retroativa['Prazo Prescrição Retroativa decorrente da Pena in abstrato'] = prescricao_in_concreto
                 dicionario_retroativa['Prazo Prescrição Retroativa decorrente da Pena in concreto'] = prescricao_in_concreto
 
+
+                pena_in_concreto_retroage_fato_x_denuncia = dicionario_retroativa['Há prescrição retroativa pela pena in concreto entre a data do fato e o recebimento da Denúncia?']
+
+
                 if verificacao_idade:
                     if dicionario_retroativa[
                         'Autor é menor de 21 anos na data dos fatos?'] or dicionario_retroativa[
@@ -318,8 +329,10 @@ def calc_prescricao_retroativa():
                 #     st.error("PRESCREVEU ENTRE A DATA DO FATO E A DATA ATUAL", icon="🚫")
                 #     prescreveu = True
 
-                if dt_fato_x_dt_denuncia >= prescricao_in_concreto:
-                    st.error("PRESCREVEU ENTRE A DATA DO FATO E A DATA DE RECEBIMENTO DA DENÚNCIA", icon="🚫")
+
+                if dt_fato_x_dt_denuncia >= prescricao_in_concreto and pena_in_concreto_retroage_fato_x_denuncia:
+
+                    st.error("PRESCREVEU ENTRE A DATA DO FATO E A DATA DE RECEBIMENTO DA DENÚNCIA PELA PENA IN CONCRETO", icon="🚫")
                     prescreveu = True
 
                 if not verificar_rito_juri:
