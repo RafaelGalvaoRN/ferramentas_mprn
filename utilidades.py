@@ -12,6 +12,13 @@ dic_prescricao = {**dicionario_legislacao.codigo_penal, **dicionario_legislacao.
                   **dicionario_legislacao.tributario}
 
 
+def get_crimes_and_selec_crime(dicionario):
+    crimes = [crime for crime in dicionario.keys()]
+    crimes_ordenados = sorted(crimes)
+    tipo_penal = st.selectbox('Tipo Penal', crimes_ordenados)
+
+    return tipo_penal
+
 def streamlit_denuncia_x_suspensao_prescricao_x_verificar_idade(tributario_consolidado) -> dict:
     recebimento_denuncia = st.checkbox('Recebimento da Denúncia')
     tributario_consolidado['Houve recebimento da denúncia?'] = recebimento_denuncia

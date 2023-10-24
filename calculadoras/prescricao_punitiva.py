@@ -1,7 +1,7 @@
 import pprint
 
 import streamlit as st
-import dicionario_legislacao
+from dicionario_legislacao import *
 import utilidades
 from utilidades import *
 from datetime import datetime, timedelta, date
@@ -12,7 +12,23 @@ from dateutil.relativedelta import relativedelta
 from controler import Acao
 
 
-def calc_prescricao_punitiva():
+def menu_calc_prescricao_punitiva():
+    submenu = st.radio("",
+                       ["Escolha o tipo de calculadora de prescrição punitiva", "Rito Ordinário", "Rito Tributário",
+                        "Rito do Júri"], index=0)
+
+    if submenu == "Rito Ordinário":
+        calc_prescricao_punitiva_ordinaria()
+
+    elif submenu == "Rito Tributário":
+        calc_prescricao_punitiva_tributaria()
+
+    elif submenu == "Rito do Júri":
+        calc_prescricao_punitiva_juri()
+
+
+
+def calc_prescricao_punitiva_ordinaria():
     dicionario_final = {}
 
     processo = st.text_input(label='Processo', max_chars=30)
@@ -32,42 +48,34 @@ def calc_prescricao_punitiva():
                                          "Lei 9.605/98 - Lei de Crimes Ambientais"])
 
     if legislacao == 'Código Penal':
+        dicionario_final['crime'] = get_crimes_and_selec_crime(codigo_penal)
 
-        crimes = [crime for crime in dicionario_legislacao.codigo_penal.keys()]
-        crimes_ordenados = sorted(crimes)
-        tipo_penal = st.selectbox('Tipo Penal', crimes_ordenados)
-        dicionario_final['crime'] = tipo_penal
 
     elif legislacao == 'Lei Maria da Penha':
-        crimes = [crime for crime in dicionario_legislacao.maria_da_penha.keys()]
-        tipo_penal = st.selectbox('Tipo Penal', crimes)
-        dicionario_final['crime'] = tipo_penal
+        dicionario_final['crime'] = get_crimes_and_selec_crime(maria_da_penha)
 
     elif legislacao == 'Lei 11.343/06 - Lei de Drogas':
-        crimes = [crime for crime in dicionario_legislacao.trafico.keys()]
-        tipo_penal = st.selectbox('Tipo Penal', crimes)
-        dicionario_final['crime'] = tipo_penal
+        dicionario_final['crime'] = get_crimes_and_selec_crime(trafico)
 
 
     elif legislacao == 'Lei 10.826/03 - Estatuto do Desarmamento':
-        crimes = [crime for crime in dicionario_legislacao.estatuto_desarmamento.keys()]
-        tipo_penal = st.selectbox('Tipo Penal', crimes)
-        dicionario_final['crime'] = tipo_penal
+        dicionario_final['crime'] = get_crimes_and_selec_crime(estatuto_desarmamento)
 
     elif legislacao == 'Decreto_Lei nº 3.688 - Lei das Contravenções Penais':
-        crimes = [crime for crime in dicionario_legislacao.lcp.keys()]
-        tipo_penal = st.selectbox('Tipo Penal', crimes)
-        dicionario_final['crime'] = tipo_penal
+        dicionario_final['crime'] = get_crimes_and_selec_crime(lcp)
+
 
     elif legislacao == 'Lei 9.503/97 - Código de Trânsito Brasileiro':
-        crimes = [crime for crime in dicionario_legislacao.ctb.keys()]
-        tipo_penal = st.selectbox('Tipo Penal', crimes)
-        dicionario_final['crime'] = tipo_penal
+        dicionario_final['crime'] = get_crimes_and_selec_crime(ctb)
+
 
     elif legislacao == 'Lei 9.605/98 - Lei de Crimes Ambientais':
-        crimes = [crime for crime in dicionario_legislacao.ambiental.keys()]
-        tipo_penal = st.selectbox('Tipo Penal', crimes)
-        dicionario_final['crime'] = tipo_penal
+        dicionario_final['crime'] = get_crimes_and_selec_crime(ambiental)
+
+
+
+    consumacao_do_crime = st.radio("Consumação", ["Crime Consumado", "Crime Tentado"])
+    dicionario_final['Consumação' ] = consumacao_do_crime
 
     recebimento_denuncia = st.checkbox('Recebimento da Denúncia')
     dicionario_final['recebimento_denuncia_bool'] = recebimento_denuncia
@@ -87,9 +95,9 @@ def calc_prescricao_punitiva():
         data_minima = datetime.today() - timedelta(days=30 * 365)
 
         dt_inicio_suspensao = st.date_input('Data do Início da Suspensão', value=None, format="DD/MM/YYYY",
-                                            min_value=data_minima)
+                                            min_value=data_fato)
         dt_fim_suspensao = st.date_input('Data do Fim da Suspensão', value=None, format="DD/MM/YYYY",
-                                         min_value=data_minima)
+                                         min_value=dt_inicio_suspensao)
 
         dicionario_final['Dt_inicio_suspensao'] = dt_inicio_suspensao
         dicionario_final['Dt_fim_suspensao'] = dt_fim_suspensao
@@ -98,6 +106,7 @@ def calc_prescricao_punitiva():
                                     help='Art. 115 - São reduzidos de metade os prazos de prescrição quando o criminoso era, '
                                          'ao tempo do crime, menor de 21 (vinte e um) anos, ou, na data da sentença, '
                                          'maior de 70 (setenta) anos.')
+
     dicionario_final['verificacao_idade'] = verificacao_idade
 
     if verificacao_idade:
@@ -106,7 +115,7 @@ def calc_prescricao_punitiva():
 
         # Agora você pode usar 'data_minima' como o valor de 'min_value'
         idade_autor = st.date_input('Data de nascimento do Autor do fato', value=None, format="DD/MM/YYYY",
-                                    min_value=data_minima)
+                                    min_value=data_minima, max_value=data_fato)
 
         dicionario_final['idade_autor'] = idade_autor
         dicionario_final['verificacao_idade']: True
@@ -196,6 +205,15 @@ def calc_prescricao_punitiva():
 
             # pega prescricao legal do crime, antes do dict original ser alterado
             prescricao_legal = utilidades.dic_prescricao[tipo_penal]
+
+            #reduz a prescrição legal caso o crime tenha sido tentado
+            if dicionario_final['Consumação' ] == "Crime Tentado":
+                pass
+
+
+
+
+
 
             # pega resultado e parecer gerado pela funcao analisa prescricao
             dic_resultado, parecer = utilidades.analisa_prescricao(dicionario_final, processo, reu)
